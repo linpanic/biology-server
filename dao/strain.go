@@ -73,6 +73,14 @@ func UpdateStrain(dbLink *gorm.DB, id int64, name string, updateTime int64) erro
 	return err
 }
 
+// 通过序列号修改
+func UpdateStrainByNum(dbLink *gorm.DB, num string, name string, updateTime int64) error {
+	err := dbLink.Model(&model.Strain{}).
+		Where(&model.Strain{Number: num}).
+		Updates(model.Strain{StrainName: name, UpdateTime: updateTime}).Error
+	return err
+}
+
 // 删除一个
 func DeleteOneStrain(dbLink *gorm.DB, id int64) error {
 	err := dbLink.Delete(&model.Strain{Id: id}).Error
