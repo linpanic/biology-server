@@ -26,6 +26,17 @@ func SelectOneUser(name, pw string) *model.User {
 	return result
 }
 
+func SelectUserById(id int64) *model.User {
+	result := new(model.User)
+	result.Id = id
+	err := db.DbLink.Model(&model.User{}).First(result).Error
+	if err != nil {
+		log.Error(err)
+		return nil
+	}
+	return result
+}
+
 func UpdateUser(dbLink *gorm.DB, id int64, pw string, upt int64) error {
 	err := dbLink.Model(&model.User{Id: id}).
 		Updates(model.User{Password: pw, UpdateTime: upt}).

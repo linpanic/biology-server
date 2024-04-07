@@ -19,3 +19,11 @@ func CheckFileExist(filePath string) bool {
 	}
 	return true
 }
+
+func ReadFile(filePath string) []byte {
+	file, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil
+	}
+	return file
+}
