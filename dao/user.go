@@ -26,6 +26,15 @@ func SelectOneUser(name, pw string) *model.User {
 	return result
 }
 
+func SelectUserCount(name string) int64 {
+	result := new(int64)
+	err := db.DbLink.Model(&model.User{}).Where(model.User{UserName: name}).Count(result).Error
+	if err != nil {
+		return 0
+	}
+	return *result
+}
+
 func SelectUserById(id int64) *model.User {
 	result := new(model.User)
 	result.Id = id
