@@ -174,11 +174,12 @@
 
 ##### Request
 
-|    参数    | 类型     | 必填  | 说明                             |
-|:--------:|--------|-----|--------------------------------|
-| password | string | 是   | 密码                             |
-|   time   | int    | 是   | 10位数字时间戳                       |
-|   sign   | string    | 是   | MD5(time+password)转大写 |
+|      参数      | 类型     | 必填  | 说明                                 |
+|:------------:|--------|-----|------------------------------------|
+| old_password | string | 是   | 旧密码                                |
+| new_password | string | 是   | 新密码                                |
+|     time     | int    | 是   | 10位数字时间戳                           |
+|     sign     | string    | 是   | MD5(old_password+time+new_password)转大写 |
 
 ##### Response
 
