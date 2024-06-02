@@ -1,6 +1,6 @@
 package dto
 
-type AddStrainReq struct {
+type StrainAddReq struct {
 	StrainName     string      `json:"strain_name,omitempty"`
 	ShortName      []string    `json:"short_name,omitempty"`
 	StrainAnnotate []string    `json:"strain_annotate,omitempty"`

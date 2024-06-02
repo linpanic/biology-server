@@ -1,7 +1,9 @@
 package dao
 
 import (
+	"errors"
 	"github.com/linpanic/biology-server/db"
+	"github.com/linpanic/biology-server/dto"
 	"github.com/linpanic/biology-server/model"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -91,4 +93,16 @@ func DeleteOneStrain(dbLink *gorm.DB, id int64) error {
 func DeleteStrain(dbLink *gorm.DB, ids []int64) error {
 	err := dbLink.Delete(&model.Strain{}, ids).Error
 	return err
+}
+
+func GetMaxStrainNumber() string {
+	result := new(dto.Strain)
+	err := db.DbLink.Model(model.Strain{}).Order("number desc").Take(result).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ""
+		}
+		panic(err)
+	}
+	return result.Number
 }

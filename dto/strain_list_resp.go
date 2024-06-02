@@ -1,6 +1,6 @@
 package dto
 
-type GetStrainResp struct {
+type StrainListResp struct {
 	PageResp
 	StrainList []Strain `json:"strain_list,omitempty"`
 }

@@ -33,7 +33,7 @@ func DbInit() {
 	err = DbLink.AutoMigrate(&model.AlleleName{}, &model.AlleleNameAnnotate{},
 		&model.AlleleNameExtra{}, &model.Chromosome{}, &model.Genome{},
 		&model.ShortName{}, &model.Strain{},
-		&model.StrainAnnotate{}, &model.StrainExtra{})
+		&model.StrainAnnotate{}, &model.StrainExtra{}, &model.User{})
 	if err != nil {
 		log.Fatal(err)
 	}

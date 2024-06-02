@@ -10,8 +10,14 @@ import (
 )
 
 func init() {
+	//初始化日志
 	logs.LogInit()
+
+	//初始化数据库链接
 	db.DbInit()
+
+	//初始化品系序列号
+	InitNumber()
 }
 
 var cfg = flag.String("f", "./config.json", "config file path")
