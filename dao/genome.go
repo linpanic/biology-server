@@ -44,14 +44,14 @@ func SelectGenome(pageNo, pageSize int) []model.Genome {
 	return result
 }
 
-func CreateGenome(dbLink *gorm.DB, alleleId int64, name string, creator, createTime int64) error {
+func CreateGenome(dbLink *gorm.DB, alleleId int64, name string, creator, createTime int64) (*model.Genome, error) {
 	data := new(model.Genome)
 	data.AllelNameId = alleleId
 	data.CreateTime = createTime
 	data.GenomeName = name
 	data.CreatorId = creator
 	err := dbLink.Create(data).Error
-	return err
+	return data, err
 }
 
 func UpdateGenome(dbLink *gorm.DB, id int64, name string, ut int64) error {

@@ -26,19 +26,50 @@ func SelectOneStrain(id, number int64) *model.Strain {
 }
 
 // 模糊搜索
-func SelectStrain(number int64, name string) []model.Strain {
+func SelectStrain(name string) []model.Strain {
 	var result []model.Strain
 	tx := db.DbLink.Model(&model.Strain{})
-
-	if number != 0 {
-		tx = tx.Where("strain_id = ?", number)
-	}
 
 	if name != "" {
 		tx = tx.Where("strain_name like ?", name)
 	}
 
 	err := tx.Find(&result).Error
+	if err != nil {
+		log.Error(err)
+		return nil
+	}
+
+	return result
+}
+
+// 精准搜索
+func SelectStrainByName(name string) *model.Strain {
+	result := new(model.Strain)
+	tx := db.DbLink.Model(&model.Strain{})
+
+	if name != "" {
+		tx = tx.Where("strain_name = ?", name)
+	}
+
+	err := tx.Take(result).Error
+	if err != nil {
+		log.Error(err)
+		return nil
+	}
+
+	return result
+}
+
+func SelectStrainByNum(num string) *model.Strain {
+	result := new(model.Strain)
+	tx := db.DbLink.Model(&model.Strain{})
+
+	if num != "" {
+		tx = tx.Where("number = ?", num)
+	}
+
+	err := tx.Take(result).Error
 	if err != nil {
 		log.Error(err)
 		return nil
@@ -59,14 +90,14 @@ func SelectStrainByIds(ids []int64) []model.Strain {
 }
 
 // 新增
-func CreateStrain(dbLink *gorm.DB, num, name string, creator, createTime int64) error {
+func CreateStrain(dbLink *gorm.DB, num, name string, creator, createTime int64) (*model.Strain, error) {
 	data := new(model.Strain)
 	data.Number = num
 	data.StrainName = name
 	data.CreatorId = creator
 	data.CreateTime = createTime
 	err := dbLink.Create(data).Error
-	return err
+	return data, err
 }
 
 // 修改

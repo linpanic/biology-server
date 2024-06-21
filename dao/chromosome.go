@@ -17,7 +17,7 @@ func SelectChromsome(genomeId int64) []model.Chromosome {
 	return result
 }
 
-func CreateChromsome(dbLink *gorm.DB, genomeId int64, serials []string, createTime int64) error {
+func CreateChromsome(dbLink *gorm.DB, genomeId int64, serials []string, creatorId, createTime int64) error {
 	var data []model.Chromosome
 	for _, v := range serials {
 		if v == "" {
@@ -27,6 +27,7 @@ func CreateChromsome(dbLink *gorm.DB, genomeId int64, serials []string, createTi
 			GenomeId:   genomeId,
 			Serial:     v,
 			CreateTime: createTime,
+			CreatorId:  creatorId,
 		})
 	}
 	err := dbLink.Create(&data).Error

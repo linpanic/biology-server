@@ -51,14 +51,14 @@ func SelectAlleleNameByIds(ids []int64) []model.AlleleName {
 }
 
 // 新增
-func CreateAlleleName(dbLink *gorm.DB, strainId int64, name string, creator, createTime int64) error {
+func CreateAlleleName(dbLink *gorm.DB, strainId int64, name string, creator, createTime int64) (*model.AlleleName, error) {
 	data := new(model.AlleleName)
 	data.StrainId = strainId
 	data.AlleleName = name
 	data.CreatorId = creator
 	data.CreateTime = createTime
 	err := dbLink.Create(data).Error
-	return err
+	return data, err
 }
 
 // 修改
