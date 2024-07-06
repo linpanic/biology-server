@@ -18,9 +18,9 @@ func WebApiRun() {
 	authGroup.Use(middleware.JWTAuth())
 
 	//品系
-	authGroup.POST("/strain_list,")
-	authGroup.POST("/add_strain,")
-	authGroup.POST("/update_strain,")
-	authGroup.POST("/delete_strain,")
+	authGroup.POST("/strain_list")
+	authGroup.POST("/add_strain", api.StrainApi.Add)
+	authGroup.POST("/update_strain")
+	authGroup.POST("/delete_strain")
 
 }

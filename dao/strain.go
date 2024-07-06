@@ -3,7 +3,6 @@ package dao
 import (
 	"errors"
 	"github.com/linpanic/biology-server/db"
-	"github.com/linpanic/biology-server/dto"
 	"github.com/linpanic/biology-server/model"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -26,20 +25,20 @@ func SelectOneStrain(id, number int64) *model.Strain {
 }
 
 // 模糊搜索
-func SelectStrain(name string) []model.Strain {
+func SelectStrain(name string, pageNo, pageSize int) []model.Strain {
 	var result []model.Strain
 	tx := db.DbLink.Model(&model.Strain{})
 
 	if name != "" {
 		tx = tx.Where("strain_name like ?", name)
 	}
-
-	err := tx.Find(&result).Error
+	//分页
+	offset := (pageNo - 1) * pageSize
+	err := tx.Find(&result).Offset(offset).Limit(pageSize).Error
 	if err != nil {
 		log.Error(err)
 		return nil
 	}
-
 	return result
 }
 
@@ -127,7 +126,7 @@ func DeleteStrain(dbLink *gorm.DB, ids []int64) error {
 }
 
 func GetMaxStrainNumber() string {
-	result := new(dto.Strain)
+	result := new(model.Strain)
 	err := db.DbLink.Model(model.Strain{}).Order("number desc").Take(result).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

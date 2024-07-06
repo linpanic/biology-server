@@ -24,6 +24,12 @@ func (s *StrainService) GetNumber(req dto.StrainNumberReq) dto.Result {
 
 // 新增品系
 func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
+	err := req.Verify()
+	if err != nil {
+		log.Error(err)
+		return dto.NewErrResult(err.Error())
+	}
+
 	if req.Number == "" {
 		return dto.NewErrResult("序列号不存在")
 	}
@@ -31,14 +37,14 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 	if req.StrainName != "" {
 		//校验品系名是否重复
 		strain := dao.SelectStrainByName(req.StrainName)
-		if strain == nil {
+		if strain != nil {
 			return dto.NewErrResult("品系名已存在")
 		}
 	}
 
 	//校验序列号是否重复
 	strain := dao.SelectStrainByNum(req.Number)
-	if strain == nil {
+	if strain != nil {
 		return dto.NewErrResult("序列号已存在")
 	}
 
@@ -46,7 +52,7 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 
 	//新增品系
 	tx := db.DbLink.Begin()
-	strain, err := dao.CreateStrain(tx, req.Number, req.StrainName, userId, now)
+	strain, err = dao.CreateStrain(tx, req.Number, req.StrainName, userId, now)
 	if err != nil {
 		log.Error(err)
 		tx.Rollback()
@@ -109,7 +115,7 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 			if v.AlleleName != "" {
 
 				//新增基因
-				allele, err := dao.CreateAlleleName(db.DbLink, strain.Id, v.AlleleName, userId, now)
+				allele, err := dao.CreateAlleleName(tx, strain.Id, v.AlleleName, userId, now)
 				if err != nil {
 					log.Error(err)
 					tx.Rollback()
@@ -161,11 +167,14 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 
 					//染色体信息
 					if len(v.Serial) > 0 {
-						for i, v2 := range v.Serial {
-							v2 = strings.TrimSpace(v2)
-							v.Serial[i] = v2
+						var serials []string
+						for _, v2 := range v.Serial {
+							v2.Serial = strings.TrimSpace(v2.Serial)
+							if v2.Serial != "" {
+								serials = append(serials, v2.Serial)
+							}
 						}
-						err = dao.CreateChromsome(tx, genome.Id, v.Serial, userId, now)
+						err = dao.CreateChromsome(tx, genome.Id, serials, userId, now)
 						if err != nil {
 							log.Error(err)
 							tx.Rollback()
@@ -180,3 +189,15 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 	tx.Commit()
 	return dto.NewOKResult(nil)
 }
+
+////展示列表
+//func (s *StrainService) List(req dto.StrainListReq) dto.Result {
+//	err := req.Verify()
+//	if err != nil {
+//		log.Error(err)
+//		return dto.NewErrResult(err.Error())
+//	}
+//
+//
+//
+//}
