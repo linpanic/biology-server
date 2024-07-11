@@ -71,12 +71,8 @@ func TestAdd(t *testing.T) {
 	}
 
 	SERIAL := "染色体_%d"
-	NewSerial := func(i int) []dto.Serial {
-		return []dto.Serial{
-			{
-				Serial: fmt.Sprintf(SERIAL, i),
-			},
-		}
+	NewSerial := func(i int) string {
+		return fmt.Sprintf(SERIAL, i)
 	}
 
 	NewAlleleName := func(i int) string {
@@ -183,11 +179,11 @@ func TestAdd(t *testing.T) {
 		req.StrainAnnotate = strainAnnotate
 		req.StrainExtra = strainExtra
 		req.Allele = append(req.Allele, dto.Allele{
-			AlleleName:         alleleName,
-			AlleleNameAnnotate: alleleAnnotate,
-			AlleleNameExtra:    alleleExtra,
-			GenomeName:         genomeName,
-			Serial:             serial,
+			AlleleName:     alleleName,
+			AlleleAnnotate: alleleAnnotate,
+			Extra:          alleleExtra,
+			GenomeName:     genomeName,
+			Serial:         serial,
 		})
 		reqs = append(reqs, req)
 	}
@@ -214,11 +210,11 @@ func TestAdd(t *testing.T) {
 			serial := NewSerial(i*100 + j)
 
 			req.Allele = append(req.Allele, dto.Allele{
-				AlleleName:         alleleName,
-				AlleleNameAnnotate: alleleAnnotate,
-				AlleleNameExtra:    alleleExtra,
-				GenomeName:         genomeName,
-				Serial:             serial,
+				AlleleName:     alleleName,
+				AlleleAnnotate: alleleAnnotate,
+				Extra:          alleleExtra,
+				GenomeName:     genomeName,
+				Serial:         serial,
 			})
 		}
 		reqs = append(reqs, req)

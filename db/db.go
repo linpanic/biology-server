@@ -30,9 +30,8 @@ func DbInit() {
 	if err != nil {
 		panic(err)
 	}
-	err = DbLink.AutoMigrate(&model.AlleleName{}, &model.AlleleNameAnnotate{},
-		&model.AlleleNameExtra{}, &model.Chromosome{}, &model.Genome{},
-		&model.ShortName{}, &model.Strain{},
+	err = DbLink.AutoMigrate(&model.Allele{}, &model.AlleleAnnotate{},
+		&model.AlleleExtra{}, &model.ShortName{}, &model.Strain{},
 		&model.StrainAnnotate{}, &model.StrainExtra{}, &model.User{})
 	if err != nil {
 		log.Fatal(err)

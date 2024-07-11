@@ -8,4 +8,6 @@ var (
 	SignError        = errors.New("签名错误")
 	NumberEmptyError = errors.New("序列号不存在")
 	PageError        = errors.New("分页数据错误")
+	OrderError       = errors.New("排序错误")
+	FieldError       = errors.New("排序字段错误")
 )

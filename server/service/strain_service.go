@@ -110,79 +110,48 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 
 	//处理基因
 	if len(req.Allele) > 0 {
-		for _, v := range req.Allele {
-			v.AlleleName = strings.TrimSpace(v.AlleleName)
-			if v.AlleleName != "" {
 
-				//新增基因
-				allele, err := dao.CreateAlleleName(tx, strain.Id, v.AlleleName, userId, now)
+		for _, v := range req.Allele {
+			//新增注解
+
+			allele, err := dao.CreateAllele(tx, strain.Id, v, userId, now)
+			if err != nil {
+				log.Error(err)
+				tx.Rollback()
+				return dto.NewErrResult(err.Error())
+			}
+			if len(v.AlleleAnnotate) > 0 {
+				for i, v2 := range v.AlleleAnnotate {
+					v2 = strings.TrimSpace(v2)
+					if v2 != "" {
+						v.AlleleAnnotate[i] = v2
+					}
+				}
+				err = dao.CreateAlleleAnnotate(tx, allele.Id, v.AlleleAnnotate, userId, now)
 				if err != nil {
 					log.Error(err)
 					tx.Rollback()
 					return dto.NewErrResult(err.Error())
 				}
+			}
 
-				//新增注解
-				if len(v.AlleleNameAnnotate) > 0 {
-					for i, v2 := range v.AlleleNameAnnotate {
-						v2 = strings.TrimSpace(v2)
-						if v2 != "" {
-							v.AlleleNameAnnotate[i] = v2
-						}
-					}
-					err = dao.CreateAlleleNameAnnotate(tx, allele.Id, v.AlleleNameAnnotate, userId, now)
-					if err != nil {
-						log.Error(err)
-						tx.Rollback()
-						return dto.NewErrResult(err.Error())
+			//新增额外信息
+			if len(v.Extra) > 0 {
+				for i, v2 := range v.Extra {
+					v2.ExtraKey = strings.TrimSpace(v2.ExtraKey)
+					v2.ExtraVal = strings.TrimSpace(v2.ExtraVal)
+					if v2.ExtraKey != "" || v2.ExtraVal != "" {
+						v.Extra[i] = v2
 					}
 				}
-
-				//新增额外信息
-				if len(v.AlleleNameExtra) > 0 {
-					for i, v2 := range req.StrainExtra {
-						v2.ExtraKey = strings.TrimSpace(v2.ExtraKey)
-						v2.ExtraVal = strings.TrimSpace(v2.ExtraVal)
-						if v2.ExtraKey != "" || v2.ExtraVal != "" {
-							v.AlleleNameExtra[i] = v2
-						}
-					}
-					err = dao.CreateAlleleNameExtra(tx, allele.Id, v.AlleleNameExtra, userId, now)
-					if err != nil {
-						log.Error(err)
-						tx.Rollback()
-						return dto.NewErrResult(err.Error())
-					}
-				}
-
-				//基因修饰情况
-				v.GenomeName = strings.TrimSpace(v.GenomeName)
-				if v.GenomeName != "" {
-					genome, err := dao.CreateGenome(tx, allele.Id, v.GenomeName, userId, now)
-					if err != nil {
-						log.Error(err)
-						tx.Rollback()
-						return dto.NewErrResult(err.Error())
-					}
-
-					//染色体信息
-					if len(v.Serial) > 0 {
-						var serials []string
-						for _, v2 := range v.Serial {
-							v2.Serial = strings.TrimSpace(v2.Serial)
-							if v2.Serial != "" {
-								serials = append(serials, v2.Serial)
-							}
-						}
-						err = dao.CreateChromsome(tx, genome.Id, serials, userId, now)
-						if err != nil {
-							log.Error(err)
-							tx.Rollback()
-							return dto.NewErrResult(err.Error())
-						}
-					}
+				err = dao.CreateAlleleExtra(tx, allele.Id, v.Extra, userId, now)
+				if err != nil {
+					log.Error(err)
+					tx.Rollback()
+					return dto.NewErrResult(err.Error())
 				}
 			}
+
 		}
 	}
 
@@ -190,7 +159,7 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 	return dto.NewOKResult(nil)
 }
 
-////展示列表
+//展示列表
 //func (s *StrainService) List(req dto.StrainListReq) dto.Result {
 //	err := req.Verify()
 //	if err != nil {
@@ -199,5 +168,62 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 //	}
 //
 //
+//
+//	strainIds,count := dao.SelectStrainAndAllele(req.Keyword, req.Field, req.Order, req.PageNo, req.PageSize)
+//	if len(strainIds) ==0 || count == 0 {
+//		return dto.NewOKResult([]struct{}{})
+//	}
+//
+//
+//
+//	//
+//	//var list []dto.Strain
+//	//for _,v := range strainAlleles {
+//	//	var strain dto.Strain
+//	//	strain.StrainId = v.StrainID
+//	//	strain.StrainName = v.StrainName
+//	//	strain.Number = v.Number
+//	//
+//	//
+//	//	if v.ShortName != "" {
+//	//		split := strings.Split(v.ShortName, "||")
+//	//		strain.ShortName = split
+//	//	}
+//	//
+//	//	if v.StrainAnnotate != "" {
+//	//		split := strings.Split(v.StrainAnnotate, "||")
+//	//		strain.StrainAnnotate = split
+//	//	}
+//	//
+//	//	if v.StrainExtraKey != "" {
+//	//		split := strings.Split(v.StrainExtraKey, "||")
+//	//		for _,v2 := range split {
+//	//			strain.StrainExtra = append(strain.StrainExtra,dto.ExtraInfo{
+//	//				ExtraKey: v2,
+//	//			})
+//	//		}
+//	//	}
+//	//
+//	//	if v.StrainExtraValue != "" {
+//	//		split := strings.Split(v.StrainExtraValue, "||")
+//	//		for i,v2 := range split {
+//	//			strain.StrainExtra[i].ExtraVal = v2
+//	//		}
+//	//	}
+//	//
+//	//	if v.AlleleName != "" {
+//	//		split := strings.Split(v.AlleleName, "||")
+//	//		for _,v2 := range strain.Allele {
+//	//
+//	//		}
+//	//		strain.Allele = append(strain.Allele,dto.Allele{AlleleName: }) = split
+//	//	}
+//	//
+//	//
+//	//
+//	//
+//	//}
+//
+//	//处理数据
 //
 //}
