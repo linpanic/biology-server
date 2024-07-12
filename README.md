@@ -7,6 +7,8 @@
 
 #### 1:新增品系名
 
+##### Post http://127.0.0.1:10080/biology/strain_add
+
 ##### Request
 
 |            参数            | 类型            | 必填  | 说明                             |
@@ -36,6 +38,9 @@
 | message | string | 是   | 消息内容         |
 
 #### 2：展示品系名列表
+
+##### Post http://127.0.0.1:10080/biology/strain_list
+
 
 ##### Request
 
@@ -75,6 +80,8 @@
 
 #### 3：修改品系数据
 
+##### Post http://127.0.0.1:10080/biology/strain_update
+
 ##### Request
 
 |            参数            | 类型            | 必填  | 说明                     |
@@ -96,7 +103,7 @@
 |  code   | int    | 是   | 200为成功，其他为失败 |
 | message | string | 是   | 消息内容         |
 
-#### 4：删除品系数据
+#### 4：删除品系数据(未完成)
 
 ##### Request
 
@@ -115,6 +122,8 @@
 
 #### 5：获取序列号
 
+##### Post http://127.0.0.1:10080/biology/get_number
+
 ##### Request
 
 |  参数  | 类型     | 必填  | 说明            |
@@ -132,6 +141,8 @@
 |  data.number  | string | 是   | 序列号          |
 
 #### 6：修改基因数据
+
+##### Post http://127.0.0.1:10080/biology/allele_update
 
 ##### Request
 
@@ -159,6 +170,8 @@
 
 #### 1：注册
 
+##### Post http://127.0.0.1:10080/register
+
 ##### Request
 
 |    参数    | 类型     | 必填  | 说明                             |
@@ -178,6 +191,8 @@
 
 
 #### 2：登陆
+
+##### Post http://127.0.0.1:10080/login
 
 ##### Request
 

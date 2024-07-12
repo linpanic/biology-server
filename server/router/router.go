@@ -22,6 +22,7 @@ func WebApiRun(port int64) {
 
 	//品系
 	authGroup.POST("/strain_list", api.StrainApi.List)
+	authGroup.POST("/get_number", api.StrainApi.GetNumber)
 	authGroup.POST("/strain_add", api.StrainApi.Add)
 	authGroup.POST("/strain_update", api.StrainApi.StrainUpdate)
 	authGroup.POST("/allele_update", api.StrainApi.AlleleUpdate)
