@@ -6,7 +6,7 @@ import (
 )
 
 type Config struct {
-	Port    int64  `json:"port,omitempty"`
+	Port    int64  `json:"port,omitempty"`     //web运行端口
 	JWTKey  string `json:"jwt_key,omitempty"`  //JWT的key
 	JWTTime int64  `json:"jwt_time,omitempty"` //jwt有效时间，单位秒
 }
