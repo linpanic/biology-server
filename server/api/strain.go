@@ -14,6 +14,20 @@ var (
 
 type StrainAPI struct {
 	service.StrainService
+	service.AlleleService
+}
+
+func (s *StrainAPI) GetNumber(c *gin.Context) {
+	req := new(dto.StrainNumberReq)
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		log.Error(err)
+		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		return
+	}
+	result := s.StrainService.GetNumber(*req)
+	c.JSON(http.StatusOK, result)
+	return
 }
 
 func (s *StrainAPI) Add(c *gin.Context) {
@@ -25,6 +39,45 @@ func (s *StrainAPI) Add(c *gin.Context) {
 		return
 	}
 	result := s.StrainService.Add(*req, c.GetInt64("user"))
+	c.JSON(http.StatusOK, result)
+	return
+}
+
+func (s *StrainAPI) List(c *gin.Context) {
+	req := new(dto.StrainListReq)
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		log.Error(err)
+		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		return
+	}
+	result := s.StrainService.List(*req)
+	c.JSON(http.StatusOK, result)
+	return
+}
+
+func (s *StrainAPI) StrainUpdate(c *gin.Context) {
+	req := new(dto.StrainUpdateReq)
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		log.Error(err)
+		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		return
+	}
+	result := s.StrainService.Update(*req, c.GetInt64("user"))
+	c.JSON(http.StatusOK, result)
+	return
+}
+
+func (s *StrainAPI) AlleleUpdate(c *gin.Context) {
+	req := new(dto.AlleleUpdateReq)
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		log.Error(err)
+		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		return
+	}
+	result := s.AlleleService.Update(*req, c.GetInt64("user"))
 	c.JSON(http.StatusOK, result)
 	return
 }

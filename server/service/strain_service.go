@@ -6,6 +6,7 @@ import (
 	"github.com/linpanic/biology-server/db"
 	"github.com/linpanic/biology-server/dto"
 	log "github.com/sirupsen/logrus"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -120,14 +121,14 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 				tx.Rollback()
 				return dto.NewErrResult(err.Error())
 			}
-			if len(v.AlleleAnnotate) > 0 {
-				for i, v2 := range v.AlleleAnnotate {
+			if len(v.Annotate) > 0 {
+				for i, v2 := range v.Annotate {
 					v2 = strings.TrimSpace(v2)
 					if v2 != "" {
-						v.AlleleAnnotate[i] = v2
+						v.Annotate[i] = v2
 					}
 				}
-				err = dao.CreateAlleleAnnotate(tx, allele.Id, v.AlleleAnnotate, userId, now)
+				err = dao.CreateAlleleAnnotate(tx, allele.Id, v.Annotate, userId, now)
 				if err != nil {
 					log.Error(err)
 					tx.Rollback()
@@ -159,71 +160,196 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 	return dto.NewOKResult(nil)
 }
 
-//展示列表
-//func (s *StrainService) List(req dto.StrainListReq) dto.Result {
-//	err := req.Verify()
-//	if err != nil {
-//		log.Error(err)
-//		return dto.NewErrResult(err.Error())
-//	}
-//
-//
-//
-//	strainIds,count := dao.SelectStrainAndAllele(req.Keyword, req.Field, req.Order, req.PageNo, req.PageSize)
-//	if len(strainIds) ==0 || count == 0 {
-//		return dto.NewOKResult([]struct{}{})
-//	}
-//
-//
-//
-//	//
-//	//var list []dto.Strain
-//	//for _,v := range strainAlleles {
-//	//	var strain dto.Strain
-//	//	strain.StrainId = v.StrainID
-//	//	strain.StrainName = v.StrainName
-//	//	strain.Number = v.Number
-//	//
-//	//
-//	//	if v.ShortName != "" {
-//	//		split := strings.Split(v.ShortName, "||")
-//	//		strain.ShortName = split
-//	//	}
-//	//
-//	//	if v.StrainAnnotate != "" {
-//	//		split := strings.Split(v.StrainAnnotate, "||")
-//	//		strain.StrainAnnotate = split
-//	//	}
-//	//
-//	//	if v.StrainExtraKey != "" {
-//	//		split := strings.Split(v.StrainExtraKey, "||")
-//	//		for _,v2 := range split {
-//	//			strain.StrainExtra = append(strain.StrainExtra,dto.ExtraInfo{
-//	//				ExtraKey: v2,
-//	//			})
-//	//		}
-//	//	}
-//	//
-//	//	if v.StrainExtraValue != "" {
-//	//		split := strings.Split(v.StrainExtraValue, "||")
-//	//		for i,v2 := range split {
-//	//			strain.StrainExtra[i].ExtraVal = v2
-//	//		}
-//	//	}
-//	//
-//	//	if v.AlleleName != "" {
-//	//		split := strings.Split(v.AlleleName, "||")
-//	//		for _,v2 := range strain.Allele {
-//	//
-//	//		}
-//	//		strain.Allele = append(strain.Allele,dto.Allele{AlleleName: }) = split
-//	//	}
-//	//
-//	//
-//	//
-//	//
-//	//}
-//
-//	//处理数据
-//
-//}
+// 展示列表
+func (s *StrainService) List(req dto.StrainListReq) dto.Result {
+	err := req.Verify()
+	if err != nil {
+		log.Error(err)
+		return dto.NewErrResult(err.Error())
+	}
+
+	strainAlleles, count := dao.SelectStrainAndAllele(req.Keyword, req.Field, req.Order, req.PageNo, req.PageSize)
+	if len(strainAlleles) == 0 || count == 0 {
+		return dto.NewOKResult([]struct{}{})
+	}
+
+	var resp dto.StrainListResp
+
+	var list []dto.Strain
+	for _, v := range strainAlleles {
+		var strain dto.Strain
+		strain.Id = v.Id
+		strain.StrainName = v.StrainName
+		strain.Number = v.Number
+
+		if v.ShortName != "" {
+			split := strings.Split(v.ShortName, "△")
+			strain.ShortName = split
+		}
+
+		if v.StrainAnnotate != "" {
+			split := strings.Split(v.StrainAnnotate, "△")
+			strain.StrainAnnotate = split
+		}
+
+		if v.StrainExtraKey != "" {
+			split := strings.Split(v.StrainExtraKey, "△")
+			for _, v2 := range split {
+				strain.StrainExtra = append(strain.StrainExtra, dto.ExtraInfo{
+					ExtraKey: v2,
+				})
+			}
+		}
+
+		if v.StrainExtraValue != "" {
+			split := strings.Split(v.StrainExtraValue, "△")
+			for i, v2 := range split {
+				strain.StrainExtra[i].ExtraVal = v2
+			}
+		}
+
+		if v.AlleleId != "" {
+			aIds := strings.Split(v.AlleleId, "△")
+			aNames := strings.Split(v.AlleleName, "△")
+			genome := strings.Split(v.Genome, "△")
+			serials := strings.Split(v.Serial, "△")
+
+			aExtraKeys := strings.Split(v.AlleleExtraKey, "△")
+			aExtraVals := strings.Split(v.AlleleExtraValue, "△")
+			aAnnotates := strings.Split(v.AAnnotate, "△")
+
+			if len(aIds) == 0 {
+				continue
+			}
+			alesMap := make(map[int64]dto.Allele)
+
+			for i, v2 := range aIds {
+				if v2 == "" {
+					continue
+				}
+				var ale dto.Allele
+				aId, _ := strconv.ParseInt(v2, 10, 64)
+				ale.Id = aId
+				ale.Name = aNames[i]
+				ale.Genome = genome[i]
+				ale.Serial = serials[i]
+				alesMap[aId] = ale
+			}
+			if len(aExtraKeys) > 0 {
+				for _, key := range aExtraKeys {
+					if key == "" {
+						continue
+					}
+					before, after, _ := strings.Cut(key, "☆")
+					aId, _ := strconv.ParseInt(before, 10, 64)
+					ale := alesMap[aId]
+					ale.Extra = append(ale.Extra, dto.ExtraInfo{
+						ExtraKey: after,
+					})
+					alesMap[aId] = ale
+				}
+			}
+
+			if len(aExtraVals) > 0 {
+				for i, v3 := range aExtraVals {
+					if v3 == "" {
+						continue
+					}
+					before, after, _ := strings.Cut(v3, "☆")
+					aId, _ := strconv.ParseInt(before, 10, 64)
+					ale := alesMap[aId]
+					//ale.Extra = append(ale.Extra,dto.ExtraInfo{
+					//	ExtraKey: after,
+					//})
+					ale.Extra[i].ExtraVal = after
+					alesMap[aId] = ale
+				}
+			}
+
+			if len(aAnnotates) > 0 {
+				for _, v3 := range aAnnotates {
+					if v3 == "" {
+						continue
+					}
+					before, after, _ := strings.Cut(v3, "☆")
+					aId, _ := strconv.ParseInt(before, 10, 64)
+					ale := alesMap[aId]
+					ale.Annotate = append(ale.Annotate, after)
+					alesMap[aId] = ale
+				}
+			}
+
+			for _, v2 := range alesMap {
+				strain.Allele = append(strain.Allele, v2)
+			}
+		}
+		list = append(list, strain)
+	}
+	resp.PageNo = req.PageNo
+	resp.PageSize = req.PageSize
+	resp.Total = count
+	resp.StrainList = list
+	return dto.NewOKResult(resp)
+}
+
+// 修改品系数据
+func (s *StrainService) Update(req dto.StrainUpdateReq, userId int64) dto.Result {
+	strain := dao.SelectOneStrain(req.Id, 0)
+	if strain == nil {
+		return dto.NewErrResult("找不到该品系ID")
+	}
+
+	tx := db.DbLink.Begin()
+	err := dao.DeleteShortName(tx, req.Id)
+	if err != nil {
+		log.Error(err)
+		tx.Rollback()
+		return dto.NewErrResult(err.Error())
+	}
+
+	err = dao.DeleteStrainAnnotate(tx, req.Id)
+	if err != nil {
+		log.Error(err)
+		tx.Rollback()
+		return dto.NewErrResult(err.Error())
+	}
+
+	err = dao.DeleteStrainExtra(tx, req.Id)
+	if err != nil {
+		log.Error(err)
+		tx.Rollback()
+		return dto.NewErrResult(err.Error())
+	}
+
+	now := time.Now().Unix()
+	err = dao.UpdateStrain(tx, req.Id, req.StrainName, now)
+	if err != nil {
+		log.Error(err)
+		tx.Rollback()
+		return dto.NewErrResult(err.Error())
+	}
+
+	err = dao.CreateStrainExtra(tx, req.Id, req.StrainExtra, userId, now)
+	if err != nil {
+		log.Error(err)
+		tx.Rollback()
+		return dto.NewErrResult(err.Error())
+	}
+
+	err = dao.CreateShortName(tx, req.Id, req.ShortName, userId, now)
+	if err != nil {
+		log.Error(err)
+		tx.Rollback()
+		return dto.NewErrResult(err.Error())
+	}
+
+	err = dao.CreateStrainAnnotate(tx, req.Id, req.StrainAnnotate, userId, now)
+	if err != nil {
+		log.Error(err)
+		tx.Rollback()
+		return dto.NewErrResult(err.Error())
+	}
+
+	tx.Commit()
+	return dto.NewOKResult(nil)
+}

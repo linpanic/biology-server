@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/linpanic/biology-server/caches"
 	"github.com/linpanic/biology-server/dao"
@@ -94,7 +95,7 @@ func TestAdd(t *testing.T) {
 		}
 	}
 
-	NewstrinAnnotate := func(i int) []string {
+	NewStrinAnnotate := func(i int) []string {
 		switch i % 3 {
 		case 0:
 			return []string{fmt.Sprintf(STRAIN_ANNOTATE_1, i), fmt.Sprintf(STRAIN_ANNOTATE_2, i)}
@@ -164,7 +165,7 @@ func TestAdd(t *testing.T) {
 		strainName := NewStrain(i)
 		number := caches.GetNumber()
 		sn := NewShortName(i)
-		strainAnnotate := NewstrinAnnotate(i)
+		strainAnnotate := NewStrinAnnotate(i)
 		strainExtra := NewStainExtra(i)
 
 		alleleName := NewAlleleName(i)
@@ -179,11 +180,11 @@ func TestAdd(t *testing.T) {
 		req.StrainAnnotate = strainAnnotate
 		req.StrainExtra = strainExtra
 		req.Allele = append(req.Allele, dto.Allele{
-			AlleleName:     alleleName,
-			AlleleAnnotate: alleleAnnotate,
-			Extra:          alleleExtra,
-			GenomeName:     genomeName,
-			Serial:         serial,
+			Name:     alleleName,
+			Annotate: alleleAnnotate,
+			Extra:    alleleExtra,
+			Genome:   genomeName,
+			Serial:   serial,
 		})
 		reqs = append(reqs, req)
 	}
@@ -193,7 +194,7 @@ func TestAdd(t *testing.T) {
 		strainName := NewStrain(i)
 		number := caches.GetNumber()
 		sn := NewShortName(i)
-		strainAnnotate := NewstrinAnnotate(i)
+		strainAnnotate := NewStrinAnnotate(i)
 		strainExtra := NewStainExtra(i)
 
 		req.StrainName = strainName
@@ -210,11 +211,11 @@ func TestAdd(t *testing.T) {
 			serial := NewSerial(i*100 + j)
 
 			req.Allele = append(req.Allele, dto.Allele{
-				AlleleName:     alleleName,
-				AlleleAnnotate: alleleAnnotate,
-				Extra:          alleleExtra,
-				GenomeName:     genomeName,
-				Serial:         serial,
+				Name:     alleleName,
+				Annotate: alleleAnnotate,
+				Extra:    alleleExtra,
+				Genome:   genomeName,
+				Serial:   serial,
 			})
 		}
 		reqs = append(reqs, req)
@@ -226,4 +227,18 @@ func TestAdd(t *testing.T) {
 		log.Info(result.Message)
 	}
 
+}
+
+func TestGet(t *testing.T) {
+
+	var s StrainService
+	list := s.List(dto.StrainListReq{
+		PageReq: dto.PageReq{
+			PageNo:   1,
+			PageSize: 10,
+		},
+	})
+
+	marshal, _ := json.Marshal(list)
+	log.Info(string(marshal))
 }

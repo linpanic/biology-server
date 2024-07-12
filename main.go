@@ -7,6 +7,7 @@ import (
 	"github.com/linpanic/biology-server/cst"
 	"github.com/linpanic/biology-server/db"
 	"github.com/linpanic/biology-server/logs"
+	"github.com/linpanic/biology-server/server/router"
 )
 
 func init() {
@@ -36,5 +37,9 @@ func main() {
 	if c.JWTTime == 0 {
 		caches.JWTTime = cst.DEFAULT_JWT_TIME
 	}
+
+	router.WebApiRun()
+
+	select {}
 
 }

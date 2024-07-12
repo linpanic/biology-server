@@ -18,11 +18,20 @@ func SelectAllele(strainId int64) []model.Allele {
 	return result
 }
 
+func SelectAlleleById(id int64) *model.Allele {
+	result := new(model.Allele)
+	err := db.DbLink.Model(model.Allele{Id: id}).First(result).Error
+	if err != nil {
+		return nil
+	}
+	return result
+}
+
 func CreateAllele(dbLink *gorm.DB, strainId int64, req dto.Allele, creator, createTime int64) (*model.Allele, error) {
 	data := new(model.Allele)
 	data.StrainId = strainId
-	data.Name = req.AlleleName
-	data.Genome = req.GenomeName
+	data.Name = req.Name
+	data.Genome = req.Genome
 	data.Serial = req.Serial
 	data.CreatorId = creator
 	data.CreateTime = createTime
@@ -30,20 +39,20 @@ func CreateAllele(dbLink *gorm.DB, strainId int64, req dto.Allele, creator, crea
 	return data, err
 }
 
-func CreateAlleles(dbLink *gorm.DB, strainId int64, datas []dto.Allele, creator, createTime int64) error {
+func CreateAlleles(dbLink *gorm.DB, strainId int64, datas []dto.Allele, creator, createTime int64) ([]model.Allele, error) {
 	var adds []model.Allele
 	for _, v := range datas {
 		var data model.Allele
 		data.StrainId = strainId
-		data.Name = v.AlleleName
-		data.Genome = v.GenomeName
+		data.Name = v.Name
+		data.Genome = v.Genome
 		data.Serial = v.Serial
 		data.CreatorId = creator
 		data.CreateTime = createTime
 		adds = append(adds, data)
 	}
 	err := dbLink.Create(&adds).Error
-	return err
+	return adds, err
 }
 
 func UpdateAllele(dbLink *gorm.DB, id int64, name, genome, serial string, updateTime int64) error {

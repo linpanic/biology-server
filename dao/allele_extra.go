@@ -25,7 +25,7 @@ func SelectAlleleExtra(alleleNameId int64, extra string) []model.AlleleExtra {
 	return result
 }
 
-func CreateAlleleExtra(dbLink *gorm.DB, alleleNameId int64, extra []dto.ExtraInfo, creator, createTime int64) error {
+func CreateAlleleExtra(dbLink *gorm.DB, alleleId int64, extra []dto.ExtraInfo, creator, createTime int64) error {
 	var data []model.AlleleExtra
 	for _, v := range extra {
 		if v.ExtraKey == "" && v.ExtraVal == "" {
@@ -38,7 +38,7 @@ func CreateAlleleExtra(dbLink *gorm.DB, alleleNameId int64, extra []dto.ExtraInf
 			v.ExtraVal = " "
 		}
 		data = append(data, model.AlleleExtra{
-			AlleleId:   alleleNameId,
+			AlleleId:   alleleId,
 			ExtraKey:   v.ExtraKey,
 			ExtraValue: v.ExtraVal,
 			CreatorId:  creator,
@@ -52,8 +52,46 @@ func CreateAlleleExtra(dbLink *gorm.DB, alleleNameId int64, extra []dto.ExtraInf
 	return err
 }
 
-func DeleteAlleleExtra(dbLink *gorm.DB, alleleNameId int64) error {
-	err := dbLink.Delete(&model.AlleleExtra{}, "allele_id = ?", alleleNameId).Error
+func CreateAllelesExtra(dbLink *gorm.DB, req []dto.Allele, creator, createTime int64) error {
+	var data []model.AlleleExtra
+	for _, v := range req {
+		if v.Id == 0 {
+			continue
+		}
+
+		for _, v2 := range v.Extra {
+			if v2.ExtraKey == "" && v2.ExtraVal == "" {
+				continue
+			}
+			if v2.ExtraKey == "" {
+				v2.ExtraKey = " "
+			}
+			if v2.ExtraVal == "" {
+				v2.ExtraVal = " "
+			}
+			data = append(data, model.AlleleExtra{
+				AlleleId:   v2.Id,
+				ExtraKey:   v2.ExtraKey,
+				ExtraValue: v2.ExtraVal,
+				CreatorId:  creator,
+				CreateTime: createTime,
+			})
+		}
+	}
+	if len(data) == 0 {
+		return nil
+	}
+	err := dbLink.Create(&data).Error
+	return err
+}
+
+func DeleteAlleleExtra(dbLink *gorm.DB, alleleId int64) error {
+	err := dbLink.Delete(&model.AlleleExtra{}, "allele_id = ?", alleleId).Error
+	return err
+}
+
+func DeleteAlleleExtras(dbLink *gorm.DB, alleleIds []int64) error {
+	err := dbLink.Delete(&model.AlleleExtra{}, "allele_id in ?", alleleIds).Error
 	return err
 }
 

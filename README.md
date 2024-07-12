@@ -9,23 +9,23 @@
 
 ##### Request
 
-|            参数            | 类型            | 必填 | 说明                             |
-|:------------------------:|---------------| ---- |--------------------------------|
+|            参数            | 类型            | 必填  | 说明                             |
+|:------------------------:|---------------|-----|--------------------------------|
 |       strain_name        | string        | 否   | 品系名，可能为空                       |
-|          number          | string        | 否   | 序列号                            |
+|          number          | string        | 是   | 序列号                            |
 |        short_name        | array(string) | 否   | 简称，一个品系可能对应多个简称                |
 |     annotate      | array(string) | 否   | 品系名注解， 一个品系可能对应多个注解            |
 |       extra       | array(object) | 否   | 品系额外信息，一个基因名可能对应多个额外信息         |
-|     extra.extra_key      | string        | 是   | 品系额外信息key                      |
-|    extra.extra_value     | string| 是   | 品系额外信息value                    |
+|     extra.extra_key      | string        | 否   | 品系额外信息key                      |
+|    extra.extra_value     | string| 否   | 品系额外信息value                    |
 |          allele          | array(object) | 否   | 基因信息对象                         |
 |    allele.name    | string)       | 否   | 基因名，一个品系名可能对应多个基因名，品系名可能为空     |
 |  allele.annotate  | array(string) | 否   | 基因注解，一个基因可能对应多个注解              |
 |      allele.genome       | string        | 否   | 基因修饰情况                         |
 |      allele.serial       | string        | 否   | 对应第几条染色体，一般为罗马数字 |
 |       allele.extra       | array(object) | 否   | 基因额外信息，一个基因名可能对应多个额外信息         |
-|  allele.extra.extra_key  | string        | 是   | 基因额外信息key                      |
-| allele.extra.extra_value | string| 是   | 基因额外信息value                    |
+|  allele.extra.extra_key  | string        | 否   | 基因额外信息key                      |
+| allele.extra.extra_value | string| 否   | 基因额外信息value                    |
 
 
 ##### Response
@@ -67,34 +67,27 @@
 |    strain_list.allele.id    | int           | 否   | 基因名ID                               |
 |   strain_list.allele.name   | string        | 否   | 基因名，一个品系名可能对应多个基因名，品系名可能为空          |
 | strain_list.allele.annotate | array(string) | 否   | 基因名注解，一个基因可能对应多个注解                  |
+|   strain_list.allele.genome   | string        | 否   | 基因修饰情况                              |
+|     strain_list.allele.serial      | string        | 否   | 对应第几条染色体，一般为罗马数字,一个基因修饰情况可能有多个染色体信息 |
 |            allele.extra            | array(object) | 否   | 基因名额外信息，一个基因名可能对应多个额外信息             |
 |       allele.extra.extra_key       | string        | 是   | 基因名额外信息key                          |
 |      allele.extra.extra_value      | string| 是   | 基因名额外信息value                        |
-|   strain_list.allele.genome   | string        | 否   | 基因修饰情况                              |
-|     strain_list.allele.serial      | string        | 否   | 对应第几条染色体，一般为罗马数字,一个基因修饰情况可能有多个染色体信息 |
 
 #### 3：修改品系数据
 
 ##### Request
 
-|            参数            | 类型            | 必填  | 说明                                  |
-|:------------------------:|---------------|-----|-------------------------------------|
-|        id         | int           | 是   | 品系ID                                |
-|       name        | string        | 否   | 品系名，可能为空                            |
-|        short_name        | array(string) | 否   | 简称，一个品系可能对应多个简称                     |
-|     annotate      | array(string) | 否   | 品系名注解， 一个品系可能对应多个注解                 |
-|       extra       | array(object) | 否   | 品系额外信息，一个基因名可能对应多个额外信息         |
-|     extra.extra_key      | string        | 是   | 品系额外信息key                      |
-|    extra.extra_value     | string| 是   | 品系额外信息value                    ||          allele          | array(object) | 否   | 基因                                  |
-|     allele.id     | int           | 否   | 基因id                                |
-|    allele.name    | string)       | 否   | 基因名，一个品系可能对应多个基因名，品系名可能为空          |
-|  allele.annotate  | array(string) | 否   | 基因注解，一个基因可能对应多个注解                  |
-|    allele.genome    | string        | 否   | 基因修饰情况                              |
-|      allele.serial       | string        | 否   | 对应第几条染色体，一般为罗马数字 |
-|       allele.extra       | array(object) | 否   | 基因额外信息，一个基因可能对应多个额外信息             |
-|  allele.extra.extra_key  | string        | 是   | 基因额外信息key                          |
-| allele.extra.extra_value | string| 是   | 基因额外信息value                        |
-
+|            参数            | 类型            | 必填  | 说明                     |
+|:------------------------:|---------------|-----|------------------------|
+|            id            | int           | 是   | 品系ID                   |
+|       strain_name        | string        | 否   | 品系名，可能为空               |
+|          number          | string        | 否   | 品系序列号                  |
+|        short_name        | array(string) | 否   | 简称，一个品系可能对应多个简称        |
+|     strain_annotate      | array(string) | 否   | 品系名注解， 一个品系可能对应多个注解    |
+|       strain_extra       | array(object) | 否   | 品系额外信息，一个基因名可能对应多个额外信息 |
+|  strain_extra.extra_key  | string        | 是   | 品系额外信息key              |
+| strain_extra.extra_value | string| 是   | 品系额外信息value            ||       
+|
 
 ##### Response
 
@@ -137,6 +130,30 @@
 | message | string | 是   | 消息内容         |
 |  data   | object | 是   | 数据 |
 |  data.number  | string | 是   | 序列号          |
+
+#### 6：修改基因数据
+
+##### Request
+
+|   参数   | 类型            | 必填  | 说明   |
+|:------:|---------------|-----|------|
+|   Id   | int           | 是   | 品系ID |
+| allele | array(object) | 否   | 基因信息 |
+|    allele.id    | int           | 否   | 基因名ID                               |
+|   allele.name   | string        | 否   | 基因名，一个品系名可能对应多个基因名，品系名可能为空          |
+| allele.annotate | array(string) | 否   | 基因名注解，一个基因可能对应多个注解                  |
+|   allele.genome   | string        | 否   | 基因修饰情况                              |
+|     allele.serial      | string        | 否   | 对应第几条染色体，一般为罗马数字,一个基因修饰情况可能有多个染色体信息 |
+|            allele.extra            | array(object) | 否   | 基因名额外信息，一个基因名可能对应多个额外信息             |
+|       allele.extra.extra_key       | string        | 是   | 基因名额外信息key                          |
+|      allele.extra.extra_value      | string| 是   | 基因名额外信息value                        |
+
+##### Response
+
+|   参数    | 类型     | 必填  | 说明           |
+|:-------:|--------|-----|--------------|
+|  code   | int    | 是   | 200为成功，其他为失败 |
+| message | string | 是   | 消息内容         |
 
 ### 二：用户
 

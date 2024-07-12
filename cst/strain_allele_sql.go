@@ -178,54 +178,54 @@ const (
 
 	STRAIN_SQL = `SELECT
 	sasaese.*,
-	GROUP_CONCAT( sn.short_name, '||' ) short_name 
+	GROUP_CONCAT(sn.short_name, '△' ) short_name 
 FROM
 	(
 	SELECT
 		sasae.*,
-		GROUP_CONCAT( se.extra_key, '||' ) strain_extra_key,
-		GROUP_CONCAT( se.extra_value, '||' ) strain_extra_value 
+		GROUP_CONCAT( se.extra_key, '△' ) strain_extra_key,
+		GROUP_CONCAT( se.extra_value, '△' ) strain_extra_value 
 	FROM
 		(
 		SELECT
 			sae.*,
-			sa.annotate strain_annotate 
+			GROUP_CONCAT(sa.annotate,'△') strain_annotate 
 		FROM
 			(
 			SELECT
 				s.id,
 				s.number,
 				s.strain_name,
-				GROUP_CONCAT( aaeaa.allele_id, '||' ) allele_id,
-				GROUP_CONCAT( aaeaa.name, '||' ) allele_name,
-				GROUP_CONCAT( aaeaa.genome, '||' ) genome,
-				GROUP_CONCAT( aaeaa.serial, '||' ) serial,
-				GROUP_CONCAT( aaeaa.extra_key, '||' ) allele_extra_key,
-				GROUP_CONCAT( aaeaa.extra_value, '||' ) allele_extra_value,
-				GROUP_CONCAT( aaeaa.annotate, '||' ) a_annotate 
+				GROUP_CONCAT( aaeaa.allele_id, '△' ) allele_id,
+				GROUP_CONCAT( aaeaa.name, '△' ) allele_name,
+				GROUP_CONCAT( aaeaa.genome, '△' ) genome,
+				GROUP_CONCAT( aaeaa.serial, '△' ) serial,
+				GROUP_CONCAT( aaeaa.extra_key, '△' ) allele_extra_key,
+				GROUP_CONCAT( aaeaa.extra_value, '△' ) allele_extra_value,
+				GROUP_CONCAT( aaeaa.annotate, '△' ) a_annotate 
 			FROM
 				strain s
 				LEFT JOIN (
 				SELECT
 					aae.*,
-					aa.annotate 
+					GROUP_CONCAT(aa.allele_id||'☆'||aa.annotate,'△' ) annotate 
 				FROM
-					allele_annotate aa
-					LEFT JOIN (
+					(
 					SELECT
 						a.id allele_id,
 						a.strain_id,
 						a.name,
 						a.genome,
 						a.serial,
-						GROUP_CONCAT( ae.extra_key ) extra_key,
-						GROUP_CONCAT( ae.extra_value ) extra_value 
+						GROUP_CONCAT( ae.allele_id||'☆'||ae.extra_key,'△' ) extra_key,
+						GROUP_CONCAT( ae.allele_id||'☆'||ae.extra_value ,'△') extra_value 
 					FROM
 						allele a
 						LEFT JOIN allele_extra ae ON ae.allele_id = a.id 
 					GROUP BY
 						a.id 
-					) aae ON aa.allele_id = aae.allele_id 
+					) aae
+					LEFT JOIN allele_annotate aa ON aa.allele_id = aae.allele_id 
 				GROUP BY
 					aae.allele_id 
 				) aaeaa ON s.id = aaeaa.strain_id 

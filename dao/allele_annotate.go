@@ -2,6 +2,7 @@ package dao
 
 import (
 	"github.com/linpanic/biology-server/db"
+	"github.com/linpanic/biology-server/dto"
 	"github.com/linpanic/biology-server/model"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -24,14 +25,14 @@ func SelectAlleleAnnotate(alleleNameId int64, annotate string) []model.AlleleAnn
 	return result
 }
 
-func CreateAlleleAnnotate(dbLink *gorm.DB, alleleNameId int64, annotate []string, creator, createTime int64) error {
+func CreateAlleleAnnotate(dbLink *gorm.DB, alleleId int64, annotate []string, creator, createTime int64) error {
 	var data []model.AlleleAnnotate
 	for _, v := range annotate {
 		if v == "" {
 			continue
 		}
 		data = append(data, model.AlleleAnnotate{
-			AlleleId:   alleleNameId,
+			AlleleId:   alleleId,
 			Annotate:   v,
 			CreatorId:  creator,
 			CreateTime: createTime,
@@ -41,8 +42,35 @@ func CreateAlleleAnnotate(dbLink *gorm.DB, alleleNameId int64, annotate []string
 	return err
 }
 
-func DeleteAlleleAnnotate(dbLink *gorm.DB, alleleNameId int64) error {
-	err := dbLink.Delete(&model.AlleleAnnotate{}, "allele_id = ?", alleleNameId).Error
+func CreateAllelesAnnotate(dbLink *gorm.DB, req []dto.Allele, creator, createTime int64) error {
+	var data []model.AlleleAnnotate
+	for _, v := range req {
+		if v.Id == 0 {
+			continue
+		}
+		for _, v2 := range v.Annotate {
+			if v2 == "" {
+				continue
+			}
+			data = append(data, model.AlleleAnnotate{
+				AlleleId:   v.Id,
+				Annotate:   v2,
+				CreatorId:  creator,
+				CreateTime: createTime,
+			})
+		}
+	}
+	err := dbLink.Create(&data).Error
+	return err
+}
+
+func DeleteAlleleAnnotate(dbLink *gorm.DB, alleleId int64) error {
+	err := dbLink.Delete(&model.AlleleAnnotate{}, "allele_id = ?", alleleId).Error
+	return err
+}
+
+func DeleteAlleleAnnotates(dbLink *gorm.DB, alleleId []int64) error {
+	err := dbLink.Delete(&model.AlleleAnnotate{}, "allele_id in ?", alleleId).Error
 	return err
 }
 

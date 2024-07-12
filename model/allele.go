@@ -10,3 +10,7 @@ type Allele struct {
 	CreateTime int64  `json:"create_time,omitempty"`
 	UpdateTime int64  `json:"update_time,omitempty"`
 }
+
+func (a *Allele) TableName() string {
+	return "allele"
+}
