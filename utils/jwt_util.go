@@ -10,7 +10,7 @@ import (
 // 生成JWT
 func GenJWT(userId int64) (string, error) {
 	claims := make(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(time.Duration(caches.JWTTime)).Unix()
+	claims["exp"] = time.Now().Add(time.Second * time.Duration(caches.JWTTime)).Unix()
 	claims["iat"] = time.Now().Unix()
 	claims["user"] = userId
 	token := jwt.New(jwt.SigningMethodHS256)
@@ -38,5 +38,5 @@ func ParseToken(token string) (int64, error) {
 	if exp == 0 || int64(exp) < time.Now().Unix() {
 		return 0, errors.New("用户登录过期")
 	}
-	return claim["user"].(int64), nil
+	return int64(claim["user"].(float64)), nil
 }
