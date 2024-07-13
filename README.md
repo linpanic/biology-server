@@ -199,7 +199,7 @@
 |    参数    | 类型     | 必填  | 说明                             |
 |:--------:|--------|-----|--------------------------------|
 | username | string    | 是   | 用户名                            |
-| password | string | 是   | 密码                             |
+| password | string | 是   | MD5(MD5(密码))转大写                |
 |   time   | int    | 是   | 10位数字时间戳                       |
 |   sign   | string    | 是   | MD5(username+time+password)转大写 |
 

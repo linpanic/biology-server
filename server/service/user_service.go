@@ -6,6 +6,7 @@ import (
 	"github.com/linpanic/biology-server/dto"
 	"github.com/linpanic/biology-server/utils"
 	log "github.com/sirupsen/logrus"
+	"strings"
 	"time"
 )
 
@@ -23,6 +24,7 @@ func (u UserService) Register(req dto.UserRegisterReq) dto.Result {
 		return dto.NewErrResult("用户已被注册")
 	}
 	tx := db.DbLink.Begin()
+	req.Password = strings.ToUpper(utils.MD5([]byte(utils.MD5([]byte(req.Password)))))
 	err = dao.CreateUser(tx, req.Username, req.Password, time.Now().Unix())
 	if err != nil {
 		tx.Rollback()
