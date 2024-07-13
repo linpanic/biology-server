@@ -12,8 +12,9 @@ func FieldEmpty(data any) bool {
 	}
 	for i := 0; i < value.NumField(); i++ {
 		if value.Field(i).IsZero() {
-			return false
+			return true
 		}
 	}
-	return true
+	return false
+
 }
