@@ -18,7 +18,7 @@ func CreateUser(dbLink *gorm.DB, name, pw string, createTime int64) error {
 
 func SelectOneUser(name, pw string) *model.User {
 	result := new(model.User)
-	err := db.DbLink.Model(&model.User{}).Where(model.User{UserName: name, Password: pw}).Find(result).Error
+	err := db.DbLink.Model(&model.User{}).Where(model.User{UserName: name, Password: pw}).First(result).Error
 	if err != nil {
 		log.Error(err)
 		return nil

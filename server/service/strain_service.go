@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+var (
+	StrainServiceInstance StrainService
+)
+
 type StrainService struct{}
 
 // 获取序列号
@@ -168,7 +172,7 @@ func (s *StrainService) List(req dto.StrainListReq) dto.Result {
 		return dto.NewErrResult(err.Error())
 	}
 
-	strainAlleles, count := dao.SelectStrainAndAllele(req.Keyword, req.Field, req.Order, req.PageNo, req.PageSize)
+	strainAlleles, count := dao.SelectStrainAndAllele(req.Key, req.Field, req.Order, req.PageNo, req.PageSize)
 	if len(strainAlleles) == 0 || count == 0 {
 		return dto.NewOKResult([]struct{}{})
 	}
@@ -235,38 +239,49 @@ func (s *StrainService) List(req dto.StrainListReq) dto.Result {
 				ale.Serial = serials[i]
 				alesMap[aId] = ale
 			}
-			if len(aExtraKeys) > 0 {
-				for _, key := range aExtraKeys {
-					if key == "" {
-						continue
-					}
-					before, after, _ := strings.Cut(key, "☆")
-					aId, _ := strconv.ParseInt(before, 10, 64)
+			if v.AlleleExtraKey != "" && len(aExtraKeys) > 0 {
+				for i := 0; i < len(aExtraKeys); i++ {
+					idStr, key, _ := strings.Cut(aExtraKeys[i], "☆")
+					_, value, _ := strings.Cut(aExtraVals[i], "☆")
+					aId, _ := strconv.ParseInt(idStr, 10, 64)
 					ale := alesMap[aId]
+
 					ale.Extra = append(ale.Extra, dto.ExtraInfo{
-						ExtraKey: after,
+						ExtraKey: key,
+						ExtraVal: value,
 					})
 					alesMap[aId] = ale
 				}
+
+				//for _, key := range aExtraKeys {
+				//	if key == "" {
+				//		continue
+				//	}
+				//	before, after, _ := strings.Cut(key, "☆")
+				//	aId, _ := strconv.ParseInt(before, 10, 64)
+				//	ale := alesMap[aId]
+				//
+				//	ale.Extra = append(ale.Extra, dto.ExtraInfo{
+				//		ExtraKey: after,
+				//	})
+				//	alesMap[aId] = ale
+				//}
 			}
 
-			if len(aExtraVals) > 0 {
-				for i, v3 := range aExtraVals {
-					if v3 == "" {
-						continue
-					}
-					before, after, _ := strings.Cut(v3, "☆")
-					aId, _ := strconv.ParseInt(before, 10, 64)
-					ale := alesMap[aId]
-					//ale.Extra = append(ale.Extra,dto.ExtraInfo{
-					//	ExtraKey: after,
-					//})
-					ale.Extra[i].ExtraVal = after
-					alesMap[aId] = ale
-				}
-			}
+			//if len(aExtraVals) > 0 {
+			//	for i, v3 := range aExtraVals {
+			//		if v3 == "" {
+			//			continue
+			//		}
+			//		before, after, _ := strings.Cut(v3, "☆")
+			//		aId, _ := strconv.ParseInt(before, 10, 64)
+			//		ale := alesMap[aId]
+			//		ale.Extra[i].ExtraVal = after
+			//		alesMap[aId] = ale
+			//	}
+			//}
 
-			if len(aAnnotates) > 0 {
+			if v.AAnnotate != "" && len(aAnnotates) > 0 {
 				for _, v3 := range aAnnotates {
 					if v3 == "" {
 						continue
@@ -350,6 +365,33 @@ func (s *StrainService) Update(req dto.StrainUpdateReq, userId int64) dto.Result
 		return dto.NewErrResult(err.Error())
 	}
 
+	var alleleReq dto.AlleleUpdateReq
+	alleleReq.Id = req.Id
+	alleleReq.Allele = req.Allele
+
+	err = AlleleServiceInstance.UpdateWithStrain(tx, alleleReq, userId)
+	if err != nil {
+		tx.Rollback()
+		return dto.NewErrResult(err.Error())
+	}
+
+	tx.Commit()
+	return dto.NewOKResult(nil)
+}
+
+func (s *StrainService) Delete(req dto.StrainDelReq) dto.Result {
+	err := req.Verify()
+	if err != nil {
+		log.Error(err)
+		return dto.NewErrResult(err.Error())
+	}
+	tx := db.DbLink.Begin()
+	err = dao.DeleteOneStrain(tx, req.StrainId)
+	if err != nil {
+		log.Error(err)
+		tx.Rollback()
+		return dto.NewErrResult(err.Error())
+	}
 	tx.Commit()
 	return dto.NewOKResult(nil)
 }

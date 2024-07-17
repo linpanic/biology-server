@@ -20,8 +20,18 @@ func SelectAllele(strainId int64) []model.Allele {
 
 func SelectAlleleById(id int64) *model.Allele {
 	result := new(model.Allele)
-	err := db.DbLink.Model(model.Allele{Id: id}).First(result).Error
+	err := db.DbLink.Model(&model.Allele{Id: id}).First(result).Error
 	if err != nil {
+		return nil
+	}
+	return result
+}
+
+func SelectAlleleByName(name string) []model.Allele {
+	var result []model.Allele
+	err := db.DbLink.Model(&model.Allele{}).Select("id,name,genome,serial").Where("name like ?", "%"+name+"%").Find(&result).Error
+	if err != nil {
+		log.Error(err)
 		return nil
 	}
 	return result
@@ -67,7 +77,7 @@ func UpdateAllele(dbLink *gorm.DB, id int64, name, genome, serial string, update
 }
 
 func DeleteAllele(dbLink *gorm.DB, strainId int64) error {
-	err := dbLink.Delete(&model.Allele{}, "strain_id = ?", strainId).Error
+	err := dbLink.Debug().Delete(&model.Allele{}, "strain_id = ?", strainId).Error
 	return err
 }
 

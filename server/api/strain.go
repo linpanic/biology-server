@@ -81,3 +81,29 @@ func (s *StrainAPI) AlleleUpdate(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 	return
 }
+
+func (s *StrainAPI) AlleleSearch(c *gin.Context) {
+	req := new(dto.AlleleSearchReq)
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		log.Error(err)
+		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		return
+	}
+	result := s.AlleleService.AlleleSearch(*req)
+	c.JSON(http.StatusOK, result)
+	return
+}
+
+func (s *StrainAPI) StrainDelete(c *gin.Context) {
+	req := new(dto.StrainDelReq)
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		log.Error(err)
+		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		return
+	}
+	result := s.StrainService.Delete(*req)
+	c.JSON(http.StatusOK, result)
+	return
+}

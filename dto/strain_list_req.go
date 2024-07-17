@@ -7,9 +7,9 @@ import (
 
 type StrainListReq struct {
 	PageReq        //分页
-	Keyword string `json:"keyword,omitempty"` //搜索的关键词
-	Field   string `json:"field,omitempty"`   //字段
-	Order   string `json:"order,omitempty"`   //排序方式
+	Key     string `json:"key,omitempty"`   //搜索的关键词
+	Field   string `json:"field,omitempty"` //字段
+	Order   string `json:"order,omitempty"` //排序方式
 }
 
 func (s *StrainListReq) Verify() error {

@@ -28,3 +28,10 @@ func NewErrResult(err string) Result {
 		Message: err,
 	}
 }
+
+func LoginErrorResult() Result {
+	return Result{
+		Code:    http.StatusUnauthorized,
+		Message: "登陆身份过期",
+	}
+}

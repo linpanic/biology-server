@@ -19,7 +19,7 @@ func JWTAuth() func(*gin.Context) {
 
 		userId, err := utils.ParseToken(token)
 		if err != nil {
-			c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+			c.JSON(http.StatusOK, dto.LoginErrorResult)
 			c.Abort()
 			return
 		}

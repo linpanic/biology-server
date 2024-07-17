@@ -18,11 +18,11 @@ func SelectStrainAndAllele(kw, field, order string, pageNo, pageSize int) ([]mod
 	countSql := fmt.Sprintf(cst.STRAIN_COUNT_SQL, sql)
 
 	if field != "" {
-		sql += "order by " + field
+		sql += " order by " + field + " "
 		if order != "" {
 			sql += order
 		} else {
-			sql += "desc"
+			sql += " desc"
 		}
 	}
 

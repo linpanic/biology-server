@@ -19,6 +19,8 @@ func init() {
 
 	//初始化品系序列号
 	InitNumber()
+
+	caches.InitStrainAlleleField()
 }
 
 var cfg = flag.String("f", "./config.json", "config file path")
