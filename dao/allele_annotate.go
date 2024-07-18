@@ -60,6 +60,9 @@ func CreateAllelesAnnotate(dbLink *gorm.DB, req []dto.Allele, creator, createTim
 			})
 		}
 	}
+	if len(data) == 0 {
+		return nil
+	}
 	err := dbLink.Create(&data).Error
 	return err
 }

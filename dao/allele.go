@@ -61,6 +61,9 @@ func CreateAlleles(dbLink *gorm.DB, strainId int64, datas []dto.Allele, creator,
 		data.CreateTime = createTime
 		adds = append(adds, data)
 	}
+	if len(adds) == 0 {
+		return nil, nil
+	}
 	err := dbLink.Create(&adds).Error
 	return adds, err
 }

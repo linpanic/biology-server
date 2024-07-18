@@ -109,6 +109,9 @@ func (a *AlleleService) UpdateWithStrain(tx *gorm.DB, req dto.AlleleUpdateReq, u
 	var ids []int64
 
 	for _, v := range req.Allele {
+		if v.Id == 0 {
+			continue
+		}
 		ids = append(ids, v.Id)
 	}
 
@@ -141,6 +144,7 @@ func (a *AlleleService) UpdateWithStrain(tx *gorm.DB, req dto.AlleleUpdateReq, u
 			creates = append(creates, v)
 		}
 	}
+
 	if len(creates) > 0 {
 		result, err := dao.CreateAlleles(tx, req.Id, creates, userId, now)
 		if err != nil {
