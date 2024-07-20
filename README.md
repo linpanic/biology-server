@@ -421,3 +421,9 @@ https://github.com/sugarbecomer/biology-vue
 |:-------:|--------|-----|--------------|
 |  code   | int    | 是   | 200为成功，其他为失败 |
 | message | string | 是   | 消息内容         |
+
+## 鸣谢
+
+感谢 [JetBrains](https://www.jetbrains.com/?from=biology-server) 提供的 free JetBrains Open Source license
+
+![JetBrains-logo](https://account.jetbrains.com/static/images/jetbrains-logo-minimal.svg)
