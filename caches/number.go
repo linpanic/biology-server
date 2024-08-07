@@ -14,6 +14,5 @@ func InitNumber(num int64) {
 }
 
 func GetNumber() string {
-	add := Number.Add(1)
-	return fmt.Sprintf("#%05d", add)
+	return fmt.Sprintf("#%d", Number.Load())
 }

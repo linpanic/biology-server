@@ -2,55 +2,66 @@ package service
 
 import (
 	"github.com/linpanic/biology-server/caches"
+	"github.com/linpanic/biology-server/cst"
 	"github.com/linpanic/biology-server/dao"
 	"github.com/linpanic/biology-server/db"
 	"github.com/linpanic/biology-server/dto"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
 var (
 	StrainServiceInstance StrainService
+	l                     = new(sync.Mutex)
 )
 
 type StrainService struct{}
 
 // 获取序列号
 func (s *StrainService) GetNumber(req dto.StrainNumberReq) dto.Result {
+	l.Unlock()
+	defer l.Unlock()
 	err := req.Verify()
 	if err != nil {
 		log.Error(err)
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.VERIFY_ERROR, err.Error())
 	}
 	return dto.NewOKResult(dto.StrainNumberResp{caches.GetNumber()})
 }
 
 // 新增品系
 func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
+	l.Unlock()
+	defer func() {
+		InitNumber()
+		l.Unlock()
+	}()
+
 	err := req.Verify()
 	if err != nil {
 		log.Error(err)
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.VERIFY_ERROR, err.Error())
 	}
 
 	if req.Number == "" {
-		return dto.NewErrResult("序列号不存在")
+		return dto.NewErrResult(cst.NUMBER_NULL, "序列号不存在")
 	}
 
 	if req.StrainName != "" {
 		//校验品系名是否重复
 		strain := dao.SelectStrainByName(req.StrainName)
 		if strain != nil {
-			return dto.NewErrResult("品系名已存在")
+			return dto.NewErrResult(cst.STRAIN_EXIST, "品系名已存在")
 		}
 	}
 
 	//校验序列号是否重复
 	strain := dao.SelectStrainByNum(req.Number)
 	if strain != nil {
-		return dto.NewErrResult("序列号已存在")
+		return dto.NewErrResult(cst.NUMBER_EXIST, "序列号已存在")
 	}
 
 	now := time.Now().Unix()
@@ -61,7 +72,7 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 	if err != nil {
 		log.Error(err)
 		tx.Rollback()
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 
 	//新增简称
@@ -76,7 +87,7 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 		if err != nil {
 			log.Error(err)
 			tx.Rollback()
-			return dto.NewErrResult(err.Error())
+			return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 		}
 	}
 
@@ -92,7 +103,7 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 		if err != nil {
 			log.Error(err)
 			tx.Rollback()
-			return dto.NewErrResult(err.Error())
+			return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 		}
 	}
 
@@ -109,7 +120,7 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 		if err != nil {
 			log.Error(err)
 			tx.Rollback()
-			return dto.NewErrResult(err.Error())
+			return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 		}
 	}
 
@@ -123,7 +134,7 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 			if err != nil {
 				log.Error(err)
 				tx.Rollback()
-				return dto.NewErrResult(err.Error())
+				return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 			}
 			if len(v.Annotate) > 0 {
 				for i, v2 := range v.Annotate {
@@ -136,7 +147,7 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 				if err != nil {
 					log.Error(err)
 					tx.Rollback()
-					return dto.NewErrResult(err.Error())
+					return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 				}
 			}
 
@@ -153,7 +164,7 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 				if err != nil {
 					log.Error(err)
 					tx.Rollback()
-					return dto.NewErrResult(err.Error())
+					return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 				}
 			}
 
@@ -169,7 +180,7 @@ func (s *StrainService) List(req dto.StrainListReq) dto.Result {
 	err := req.Verify()
 	if err != nil {
 		log.Error(err)
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.VERIFY_ERROR, err.Error())
 	}
 
 	strainAlleles, count := dao.SelectStrainAndAllele(req.Key, req.Field, req.Order, req.PageNo, req.PageSize)
@@ -311,7 +322,7 @@ func (s *StrainService) List(req dto.StrainListReq) dto.Result {
 func (s *StrainService) Update(req dto.StrainUpdateReq, userId int64) dto.Result {
 	strain := dao.SelectOneStrain(req.Id, 0)
 	if strain == nil {
-		return dto.NewErrResult("找不到该品系ID")
+		return dto.NewErrResult(cst.DAO_ERROR, "找不到该品系ID")
 	}
 
 	tx := db.DbLink.Begin()
@@ -319,21 +330,21 @@ func (s *StrainService) Update(req dto.StrainUpdateReq, userId int64) dto.Result
 	if err != nil {
 		log.Error(err)
 		tx.Rollback()
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 
 	err = dao.DeleteStrainAnnotate(tx, req.Id)
 	if err != nil {
 		log.Error(err)
 		tx.Rollback()
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 
 	err = dao.DeleteStrainExtra(tx, req.Id)
 	if err != nil {
 		log.Error(err)
 		tx.Rollback()
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 
 	now := time.Now().Unix()
@@ -341,28 +352,28 @@ func (s *StrainService) Update(req dto.StrainUpdateReq, userId int64) dto.Result
 	if err != nil {
 		log.Error(err)
 		tx.Rollback()
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 
 	err = dao.CreateStrainExtra(tx, req.Id, req.StrainExtra, userId, now)
 	if err != nil {
 		log.Error(err)
 		tx.Rollback()
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 
 	err = dao.CreateShortName(tx, req.Id, req.ShortName, userId, now)
 	if err != nil {
 		log.Error(err)
 		tx.Rollback()
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 
 	err = dao.CreateStrainAnnotate(tx, req.Id, req.StrainAnnotate, userId, now)
 	if err != nil {
 		log.Error(err)
 		tx.Rollback()
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 
 	var alleleReq dto.AlleleUpdateReq
@@ -372,7 +383,7 @@ func (s *StrainService) Update(req dto.StrainUpdateReq, userId int64) dto.Result
 	err = AlleleServiceInstance.UpdateWithStrain(tx, alleleReq, userId)
 	if err != nil {
 		tx.Rollback()
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 
 	tx.Commit()
@@ -383,14 +394,14 @@ func (s *StrainService) Delete(req dto.StrainDelReq) dto.Result {
 	err := req.Verify()
 	if err != nil {
 		log.Error(err)
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.VERIFY_ERROR, err.Error())
 	}
 	tx := db.DbLink.Begin()
 	err = dao.DeleteOneStrain(tx, req.StrainId)
 	if err != nil {
 		log.Error(err)
 		tx.Rollback()
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 	tx.Commit()
 	return dto.NewOKResult(nil)

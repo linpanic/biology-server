@@ -8,6 +8,8 @@ import (
 	"github.com/linpanic/biology-server/db"
 	"github.com/linpanic/biology-server/logs"
 	"github.com/linpanic/biology-server/server/router"
+	"github.com/linpanic/biology-server/server/service"
+	log "github.com/sirupsen/logrus"
 )
 
 func init() {
@@ -18,7 +20,7 @@ func init() {
 	db.DbInit()
 
 	//初始化品系序列号
-	InitNumber()
+	service.InitNumber()
 
 	caches.InitStrainAlleleField()
 }
@@ -41,7 +43,7 @@ func main() {
 	}
 
 	router.WebApiRun(c.Port)
-
+	log.Info("project from https://github.com/linpanic/biology-server")
 	select {}
 
 }

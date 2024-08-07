@@ -1,4 +1,4 @@
-package main
+package service
 
 import (
 	"github.com/linpanic/biology-server/caches"
@@ -20,5 +20,5 @@ func InitNumber() {
 		log.Error(err)
 		panic(err)
 	}
-	caches.InitNumber(formatInt)
+	caches.InitNumber(formatInt + 1)
 }

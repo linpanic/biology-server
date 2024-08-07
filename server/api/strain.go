@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/linpanic/biology-server/cst"
 	"github.com/linpanic/biology-server/dto"
 	"github.com/linpanic/biology-server/server/service"
 	log "github.com/sirupsen/logrus"
@@ -22,7 +23,7 @@ func (s *StrainAPI) GetNumber(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Error(err)
-		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
 	result := s.StrainService.GetNumber(*req)
@@ -35,7 +36,7 @@ func (s *StrainAPI) Add(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Error(err)
-		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
 	result := s.StrainService.Add(*req, c.GetInt64("user"))
@@ -48,7 +49,7 @@ func (s *StrainAPI) List(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Error(err)
-		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
 	result := s.StrainService.List(*req)
@@ -61,7 +62,7 @@ func (s *StrainAPI) StrainUpdate(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Error(err)
-		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
 	result := s.StrainService.Update(*req, c.GetInt64("user"))
@@ -74,7 +75,7 @@ func (s *StrainAPI) AlleleUpdate(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Error(err)
-		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
 	result := s.AlleleService.Update(*req, c.GetInt64("user"))
@@ -87,7 +88,7 @@ func (s *StrainAPI) AlleleSearch(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Error(err)
-		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
 	result := s.AlleleService.AlleleSearch(*req)
@@ -100,7 +101,7 @@ func (s *StrainAPI) StrainDelete(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Error(err)
-		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
 	result := s.StrainService.Delete(*req)

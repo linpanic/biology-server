@@ -16,12 +16,17 @@ func WebApiRun(port int64) {
 	router.POST("/register", api.UserApi.Register)
 	router.POST("/login", api.UserApi.Login)
 
+	//鉴权
+	router.POST("/valid", api.OauthApi.Valid)
+
 	//需要验证
-	authGroup := router.Group("/biology")
+	biology := router.Group("/biology")
+	biology.POST("/strain_list", api.StrainApi.List)
+
+	authGroup := biology.Group("/")
 	authGroup.Use(middleware.JWTAuth())
 
 	//品系
-	authGroup.POST("/strain_list", api.StrainApi.List)
 	authGroup.POST("/get_number", api.StrainApi.GetNumber)
 	authGroup.POST("/strain_add", api.StrainApi.Add)
 	authGroup.POST("/strain_update", api.StrainApi.StrainUpdate)

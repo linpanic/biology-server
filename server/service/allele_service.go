@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/linpanic/biology-server/cst"
 	"github.com/linpanic/biology-server/dao"
 	"github.com/linpanic/biology-server/db"
 	"github.com/linpanic/biology-server/dto"
@@ -18,7 +19,7 @@ type AlleleService struct{}
 func (a *AlleleService) AlleleSearch(req dto.AlleleSearchReq) dto.Result {
 	err := req.Verify()
 	if err != nil {
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.VERIFY_ERROR, err.Error())
 	}
 	alleles := dao.SelectAlleleByName(req.Name)
 	var resp dto.AlleleSearchResp
@@ -51,14 +52,14 @@ func (a *AlleleService) Update(req dto.AlleleUpdateReq, userId int64) dto.Result
 	if err != nil {
 		log.Error(err)
 		tx.Rollback()
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 
 	err = dao.DeleteAlleleExtras(tx, ids)
 	if err != nil {
 		log.Error(err)
 		tx.Rollback()
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 
 	var creates []dto.Allele
@@ -68,7 +69,7 @@ func (a *AlleleService) Update(req dto.AlleleUpdateReq, userId int64) dto.Result
 			if err != nil {
 				log.Error(err)
 				tx.Rollback()
-				return dto.NewErrResult(err.Error())
+				return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 			}
 		} else {
 			creates = append(creates, v)
@@ -79,7 +80,7 @@ func (a *AlleleService) Update(req dto.AlleleUpdateReq, userId int64) dto.Result
 		if err != nil {
 			log.Error(err)
 			tx.Rollback()
-			return dto.NewErrResult(err.Error())
+			return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 		}
 		for i, v := range result {
 			creates[i].Id = v.Id
@@ -91,14 +92,14 @@ func (a *AlleleService) Update(req dto.AlleleUpdateReq, userId int64) dto.Result
 	if err != nil {
 		log.Error(err)
 		tx.Rollback()
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 
 	err = dao.CreateAllelesExtra(tx, req.Allele, userId, now)
 	if err != nil {
 		log.Error(err)
 		tx.Rollback()
-		return dto.NewErrResult(err.Error())
+		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 	tx.Commit()
 	return dto.NewOKResult(nil)

@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/linpanic/biology-server/cst"
 	"github.com/linpanic/biology-server/dto"
 	"github.com/linpanic/biology-server/server/service"
 	log "github.com/sirupsen/logrus"
@@ -21,7 +22,7 @@ func (u *UserAPI) Register(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Error(err)
-		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
 	result := u.UserService.Register(*req)
@@ -34,7 +35,7 @@ func (u *UserAPI) Login(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Error(err)
-		c.JSON(http.StatusOK, dto.NewErrResult(err.Error()))
+		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
 	result := u.UserService.Login(*req)

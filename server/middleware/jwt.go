@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/linpanic/biology-server/cst"
 	"github.com/linpanic/biology-server/dao"
 	"github.com/linpanic/biology-server/dto"
 	"github.com/linpanic/biology-server/utils"
@@ -12,7 +13,7 @@ func JWTAuth() func(*gin.Context) {
 	return func(c *gin.Context) {
 		token := c.Request.Header.Get("x-token")
 		if token == "" {
-			c.JSON(http.StatusOK, dto.NewErrResult("未登录或非法访问"))
+			c.JSON(http.StatusOK, dto.NewErrResult(cst.NO_LOGIN, "未登录或非法访问"))
 			c.Abort()
 			return
 		}
@@ -26,7 +27,7 @@ func JWTAuth() func(*gin.Context) {
 
 		user := dao.SelectUserById(userId)
 		if user == nil {
-			c.JSON(http.StatusOK, dto.NewErrResult("找不到该用户"))
+			c.JSON(http.StatusOK, dto.NewErrResult(cst.USER_NOT_EXIST, "找不到该用户"))
 			c.Abort()
 			return
 		}
