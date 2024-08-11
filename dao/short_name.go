@@ -30,6 +30,9 @@ func CreateShortName(dbLink *gorm.DB, strainId int64, shortNames []string, creat
 			CreateTime: createTime,
 		})
 	}
+	if len(data) == 0 {
+		return nil
+	}
 	err := dbLink.Create(&data).Error
 	return err
 }

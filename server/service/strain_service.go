@@ -34,7 +34,7 @@ func (s *StrainService) GetNumber(req dto.StrainNumberReq) dto.Result {
 
 // 新增品系
 func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
-	l.Unlock()
+	l.Lock()
 	defer func() {
 		InitNumber()
 		l.Unlock()
