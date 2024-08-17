@@ -22,7 +22,7 @@ type StrainService struct{}
 
 // 获取序列号
 func (s *StrainService) GetNumber(req dto.StrainNumberReq) dto.Result {
-	l.Unlock()
+	l.Lock()
 	defer l.Unlock()
 	err := req.Verify()
 	if err != nil {
