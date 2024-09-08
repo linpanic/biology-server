@@ -376,7 +376,7 @@ func (s *StrainService) Update(req dto.StrainUpdateReq, userId int64) dto.Result
 		return dto.NewErrResult(cst.DAO_ERROR, err.Error())
 	}
 
-	var alleleReq dto.AlleleUpdateReq
+	var alleleReq dto.StrainAlleleUpdateReq
 	alleleReq.Id = req.Id
 	alleleReq.Allele = req.Allele
 

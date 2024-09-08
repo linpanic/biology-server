@@ -244,7 +244,7 @@ FROM
 `
 
 	STRAIN_LIKE_SQL = `where
-		('number' like ? or strain_name like ? or allele_name like ?
+		(sasaese.number like ? or strain_name like ? or allele_name like ?
 			or genome like ? or serial like ? or allele_extra_key like ? 
 			or allele_extra_value like ? or a_annotate like ? or strain_annotate like ?
 		or strain_extra_key like ? or  strain_extra_value like  ? or short_name like ? )`

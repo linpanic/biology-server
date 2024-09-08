@@ -37,6 +37,9 @@ func CreateStrainAnnotate(dbLink *gorm.DB, strainId int64, annotate []string, cr
 			CreateTime: createTime,
 		})
 	}
+	if len(data) == 0 {
+		return nil
+	}
 	err := dbLink.Create(&data).Error
 	return err
 }

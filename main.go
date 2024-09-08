@@ -45,5 +45,4 @@ func main() {
 	router.WebApiRun(c.Port)
 	log.Info("project from https://github.com/linpanic/biology-server")
 	select {}
-
 }

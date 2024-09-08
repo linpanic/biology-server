@@ -30,11 +30,15 @@ func WebApiRun(port int64) {
 	authGroup.POST("/get_number", api.StrainApi.GetNumber)
 	authGroup.POST("/strain_add", api.StrainApi.Add)
 	authGroup.POST("/strain_update", api.StrainApi.StrainUpdate)
-	authGroup.POST("/allele_update", api.StrainApi.AlleleUpdate)
 	authGroup.POST("/strain_delete", api.StrainApi.StrainDelete)
 
 	//基因
-	authGroup.POST("/allele_search", api.StrainApi.AlleleSearch)
+	authGroup.POST("/allele_search", api.StrainApi.AlleleSearch) //搜素列表信息
+
+	authGroup.POST("/allele_list", api.AlleleApi.List)
+	authGroup.POST("/allele_update", api.AlleleApi.Update)
+	authGroup.POST("/allele_add", api.AlleleApi.Add)
+	authGroup.POST("/allele_delete", api.AlleleApi.Delete)
 
 	//authGroup.POST("/delete_strain")
 	err := router.Run(fmt.Sprintf(":%d", port))

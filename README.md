@@ -342,7 +342,7 @@ https://github.com/sugarbecomer/biology-vue
 
 ### 三：基因
 
-#### 1：基因查询(todo)
+#### 1：基因查询
 
 ##### Request
 
@@ -377,7 +377,7 @@ https://github.com/sugarbecomer/biology-vue
 
 
 
-#### 2：新增基因(todo)
+#### 2：新增基因
 
 ##### Request
 
@@ -394,6 +394,29 @@ https://github.com/sugarbecomer/biology-vue
 |  extra.extra_key  | string        | 是   | 基因的额外信息key              |
 | extra.extra_value | string        | 是   | 基因的额外信息value            |
 
+##### Response
+
+|   参数    | 类型     | 必填  | 说明           |
+|:-------:|--------|-----|--------------|
+|  code   | int    | 是   | 200为成功，其他为失败 |
+| message | string | 是   | 消息内容         |
+
+#### 3：修改基因
+
+##### Request
+
+##### Post http://127.0.0.1:10080/biology/allele_update
+
+|        参数         | 类型         | 必填  | 说明     |
+|:-----------------:|------------|-----|--------|
+|        id         | int | 是   | 基因ID |
+|       name        | string        | 否   | 基因名                     |
+|     annotate      | array(string) | 否   | 基因注解，一个基因可能对应多个注解       |
+|      genome       | string        | 否   | 基因修饰情况                  |
+|      serial       | string        | 否   | 对应第几条染色体，一般为罗马数字        |
+|       extra       | array(object) | 否   | 基因的额外信息，一个基因可能对应多个额外信息  |
+|  extra.extra_key  | string        | 是   | 基因的额外信息key              |
+| extra.extra_value | string        | 是   | 基因的额外信息value            |
 
 ##### Response
 
@@ -402,18 +425,15 @@ https://github.com/sugarbecomer/biology-vue
 |  code   | int    | 是   | 200为成功，其他为失败 |
 | message | string | 是   | 消息内容         |
 
-
-
-#### 3：删除基因(todo)
+#### 4：删除基因
 
 ##### Request
 
 ##### Post http://127.0.0.1:10080/biology/allele_delete
 
-
-|   参数   | 类型         | 必填  | 说明     |
-|:------:|------------|-----|--------|
-|   Id   | array(int) | 是   | 基因ID数组 |
+| 参数  | 类型         | 必填  | 说明     |
+|:---:|------------|-----|--------|
+| id  | int | 是   | 基因ID |
 
 ##### Response
 

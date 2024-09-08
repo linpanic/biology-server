@@ -1,12 +1,60 @@
 package dao
 
 import (
+	"fmt"
+	"github.com/linpanic/biology-server/cst"
 	"github.com/linpanic/biology-server/db"
 	"github.com/linpanic/biology-server/dto"
 	"github.com/linpanic/biology-server/model"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
+
+func SelectAlleleByAll(kw, field, order string, pageNo, pageSize int) ([]model.AlleleAll, int64) {
+	sql := cst.ALLELE_LIST_SQL
+	if kw != "" {
+		sql += cst.ALLELE_WHERE_SQL
+	}
+
+	countSql := fmt.Sprintf(cst.STRAIN_COUNT_SQL, sql)
+
+	if field != "" {
+		sql += " order by " + field + " "
+		if order != "" {
+			sql += order
+		} else {
+			sql += " desc"
+		}
+	}
+
+	var err error
+	var count int64
+	offset := (pageNo - 1) * pageSize
+
+	var result []model.AlleleAll
+	sql += " LIMIT ? OFFSET ?"
+	if kw != "" {
+		kw = "%" + kw + "%"
+		err = db.DbLink.Debug().Raw(sql, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, pageSize, offset).Scan(&result).Error
+		if err != nil {
+			log.Error(err)
+			return nil, 0
+		}
+		err = db.DbLink.Raw(countSql, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw).Count(&count).Error
+	} else {
+		err = db.DbLink.Debug().Raw(sql, pageSize, offset).Scan(&result).Error
+		if err != nil {
+			log.Error(err)
+			return nil, 0
+		}
+		err = db.DbLink.Debug().Raw(countSql).Count(&count).Error
+	}
+	if err != nil {
+		log.Error(err)
+		return nil, 0
+	}
+	return result, count
+}
 
 func SelectAllele(strainId int64) []model.Allele {
 	var result []model.Allele
