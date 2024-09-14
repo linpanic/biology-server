@@ -35,7 +35,7 @@ func WebApiRun(port int64) {
 	//基因
 	authGroup.POST("/allele_search", api.StrainApi.AlleleSearch) //搜素列表信息
 
-	authGroup.POST("/allele_list", api.AlleleApi.List)
+	router.POST("/allele_list", api.AlleleApi.List)
 	authGroup.POST("/allele_update", api.AlleleApi.Update)
 	authGroup.POST("/allele_add", api.AlleleApi.Add)
 	authGroup.POST("/allele_delete", api.AlleleApi.Delete)

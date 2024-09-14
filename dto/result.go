@@ -45,7 +45,7 @@ func LoginErrorResult() Result {
 func TokenErrorResult() Result {
 	return Result{
 		Code:    -401,
-		Key:     cst.TOKEN_EXPIRE,
+		Key:     cst.NEED_LOGIN,
 		Message: "登陆身份过期",
 	}
 }

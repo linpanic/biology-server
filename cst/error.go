@@ -21,6 +21,8 @@ const (
 
 	TOKEN_EXPIRE = "token_expire" //token过期
 
+	NEED_LOGIN = "needLogin"
+
 	NO_TOKEN = "no_token" //没TOKEN
 
 	NO_LOGIN = "no_login" //未登陆
