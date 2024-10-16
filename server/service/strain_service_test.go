@@ -4,13 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/linpanic/biology-server/caches"
-	"github.com/linpanic/biology-server/dao"
 	"github.com/linpanic/biology-server/db"
 	"github.com/linpanic/biology-server/dto"
 	"github.com/linpanic/biology-server/logs"
 	log "github.com/sirupsen/logrus"
-	"strconv"
-	"strings"
 	"testing"
 )
 
@@ -25,20 +22,20 @@ func init() {
 	InitNumber()
 }
 
-func InitNumber() {
-	number := dao.GetMaxStrainNumber()
-	if number == "" {
-		caches.InitNumber(0)
-		return
-	}
-	number = strings.TrimLeft(number, "#")
-	formatInt, err := strconv.ParseInt(number, 10, 64)
-	if err != nil {
-		log.Error(err)
-		panic(err)
-	}
-	caches.InitNumber(formatInt)
-}
+//func InitNumber() {
+//	number := dao.GetMaxStrainNumber()
+//	if number == "" {
+//		caches.InitNumber(0)
+//		return
+//	}
+//	number = strings.TrimLeft(number, "#")
+//	formatInt, err := strconv.ParseInt(number, 10, 64)
+//	if err != nil {
+//		log.Error(err)
+//		panic(err)
+//	}
+//	caches.InitNumber(formatInt)
+//}
 
 func TestAdd(t *testing.T) {
 	STRAIN := "品系_%d"
@@ -229,6 +226,166 @@ func TestAdd(t *testing.T) {
 
 }
 
+//
+//func TestAddByRecord(t *testing.T) {
+//	excelFileName := "./hmu.xlsx"
+//	xlFile, err := xlsx.OpenFile(excelFileName)
+//	if err != nil {
+//		log.Errorf("Error opening Excel file: %s", err)
+//		return
+//	}
+//
+//	var reqs []dto.StrainAddReq
+//
+//	for _, v := range xlFile.Sheets {
+//		for i2, row := range v.Rows {
+//			if i2 == 0 {
+//				continue
+//			}
+//			var req dto.StrainAddReq
+//			req.Number = row.Cells[0].String()
+//
+//			snStr := row.Cells[1].String()
+//			snStr = strings.TrimSpace(snStr)
+//			if snStr!= "" {
+//				req.ShortName = append(req.ShortName, snStr)
+//			}
+//			//
+//			//snStr = strings.ReplaceAll(snStr,"；",";")
+//			//
+//			//snSp := strings.Split(snStr, ";")
+//			//for _, n := range snSp {
+//			//	n = strings.TrimSpace(n)
+//			//	if n == "" {
+//			//		continue
+//			//	}
+//			//}
+//
+//			req.StrainName = row.Cells[2].String()
+//			if len(row.Cells) > 5 {
+//				for i3 := 6; i3 < len(row.Cells); i3++ {
+//					req.StrainAnnotate = append(req.StrainAnnotate, row.Cells[i3].String())
+//				}
+//			}
+//
+//			alNameStr := row.Cells[3].String()
+//			geStr := row.Cells[4].String()
+//
+//			alNameStr = strings.ReplaceAll(alNameStr, "；", ";")
+//			alNameStr = strings.ReplaceAll(alNameStr, "：", ";")
+//			alNameStr = strings.ReplaceAll(alNameStr, ":", ";")
+//			alNameStr = strings.ReplaceAll(alNameStr, ";;", ";")
+//			alNameStr = strings.ReplaceAll(alNameStr, ";;", ";")
+//			alNameStr = strings.ReplaceAll(alNameStr, ";;", ";")
+//			alNameStr = strings.ReplaceAll(alNameStr, ";;", ";")
+//			geStr = strings.ReplaceAll(geStr, "；", ";")
+//			geStr = strings.ReplaceAll(geStr, "{", "[")
+//			geStr = strings.ReplaceAll(geStr, "}", "]")
+//
+//			var alArr, geArr []string
+//
+//			if alNameStr != "" {
+//				sp := strings.Split(alNameStr, ";")
+//				for _, name := range sp {
+//					name = strings.TrimSpace(name)
+//					if name == "" {
+//						continue
+//					}
+//					alArr = append(alArr, name)
+//				}
+//			}
+//
+//			if geStr != "" {
+//				geStr = strings.TrimSpace(geStr)
+//				rs := []rune(geStr)
+//				isIn := false
+//				st := 0
+//				for rIndex, r := range rs {
+//					c := string(r)
+//					if c == "" {
+//						continue
+//					}
+//					if c == "[" {
+//						isIn = true
+//					}
+//					if c == "]" {
+//						isIn = false
+//					}
+//					if c == ";" && !isIn {
+//						if string(rs[rIndex-1]) == ";" {
+//							st = rIndex+1
+//							continue
+//						}
+//						geArr = append(geArr, string(rs[st:rIndex]))
+//						st = rIndex + 1
+//					}
+//					if len(rs)-1 == rIndex {
+//						geArr = append(geArr, string(rs[st:rIndex+1]))
+//					}
+//				}
+//			}
+//
+//			if len(alArr) == 0 && len(geArr) > 0 {
+//				for ai := 0; ai < len(geArr); ai++ {
+//					alArr = append(alArr, "")
+//				}
+//			}
+//
+//			if len(alArr) > 0 && len(geArr) == 0 {
+//				for ai := 0; ai < len(alArr); ai++ {
+//					geArr = append(geArr, "")
+//				}
+//			}
+//
+//			if len(alArr) != len(geArr) {
+//				log.Error(req.Number)
+//				panic("arr length is error")
+//			}
+//
+//			if len(alArr) > 0 || len(geArr) > 0 {
+//				for idx := 0; idx < len(alArr); idx++ {
+//					var allele dto.Allele
+//					allele.Name = alArr[idx]
+//					allele.Genome = geArr[idx]
+//					req.Allele = append(req.Allele, allele)
+//				}
+//			}
+//
+//			if row.Cells[5] != nil {
+//				req.StrainExtra = append(req.StrainExtra, dto.ExtraInfo{
+//					ExtraKey: "存在状态",
+//					ExtraVal: row.Cells[5].String(),
+//				})
+//			}
+//
+//			//if len(row.Cells) >6 {
+//			//	allele.Extra = append(allele.Extra,dto.ExtraInfo{
+//			//		ExtraKey: "列1",
+//			//		ExtraVal:  row.Cells[6].String(),
+//			//	})
+//			//}else {
+//			//	allele.Extra = append(allele.Extra,dto.ExtraInfo{
+//			//		ExtraKey: "列1",
+//			//		ExtraVal:  "",
+//			//	})
+//			//}
+//
+//			//if len(row.Cells) >5 {
+//			//	allele.Annotate = []string{row.Cells[5].String()}
+//			//}
+//			reqs = append(reqs, req)
+//		}
+//
+//		var s StrainService
+//		for _, r := range reqs {
+//			result := s.Add(r, 1)
+//			log.Info(result.Message)
+//		}
+//		break
+//	}
+//
+//}
+
 func TestGet(t *testing.T) {
 
 	var s StrainService
@@ -237,6 +394,8 @@ func TestGet(t *testing.T) {
 			PageNo:   1,
 			PageSize: 10,
 		},
+		Field: "number",
+		Order: "desc",
 	})
 
 	marshal, _ := json.Marshal(list)
