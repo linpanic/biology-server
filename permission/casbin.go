@@ -11,10 +11,6 @@ var (
 	Ef *casbin.Enforcer
 )
 
-func init() {
-	InitCasbin()
-}
-
 func InitCasbin() {
 	m, err := model.NewModelFromString(`[request_definition]
 r = sub, obj, act
@@ -33,7 +29,7 @@ m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act`)
 	if err != nil {
 		panic(err)
 	}
-	a, _ := gormadapter.NewAdapter("sqlite3", "C:\\db\\biology.db") // Your driver and data source.
+	a, _ := gormadapter.NewAdapter("sqlite3", "C:\\db\\biology.db", true) // Your driver and data source.
 	e, err := casbin.NewEnforcer(m, a)
 	if err != nil {
 		fmt.Println(err)
@@ -44,5 +40,4 @@ m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act`)
 	if err != nil {
 		panic(err)
 	}
-
 }

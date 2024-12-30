@@ -5,6 +5,8 @@ import (
 	"github.com/linpanic/biology-server/dao"
 	"github.com/linpanic/biology-server/db"
 	"github.com/linpanic/biology-server/dto"
+	"github.com/linpanic/biology-server/model"
+	"github.com/linpanic/biology-server/permission"
 	"github.com/linpanic/biology-server/utils"
 	log "github.com/sirupsen/logrus"
 	"strings"
@@ -14,7 +16,7 @@ import (
 type UserService struct {
 }
 
-func (u UserService) Register(req dto.UserRegisterReq) dto.Result {
+func (u *UserService) Register(req dto.UserRegisterReq) dto.Result {
 	err := req.Verify()
 	if err != nil {
 		log.Error(err)
@@ -35,7 +37,7 @@ func (u UserService) Register(req dto.UserRegisterReq) dto.Result {
 	return dto.NewOKResult(nil)
 }
 
-func (u UserService) Login(req dto.UserLoginReq) dto.Result {
+func (u *UserService) Login(req dto.UserLoginReq) dto.Result {
 	err := req.Verify()
 	if err != nil {
 		log.Error(err)
@@ -45,15 +47,32 @@ func (u UserService) Login(req dto.UserLoginReq) dto.Result {
 	if user == nil {
 		return dto.NewErrResult(cst.PW_ERROR, "用户名或者密码错误")
 	}
-	jwt, err := utils.GenJWT(user.Id)
+	jwt, err := utils.GenJWT(user.Id, user.UserName)
 	if err != nil {
 		log.Error(err)
 		return dto.NewErrResult(cst.UNKNOW_ERROR, "因未知原因登陆失败")
 	}
-	return dto.NewOKResult(dto.UserLoginResp{Token: jwt, UserName: req.Username})
+	menus := dao.GetMenus(db.DbLink)
+	for i, v := range menus {
+		if v.Path != "" {
+			b, _ := permission.Ef.Enforce(user.UserName, v.Path, "read")
+			if !b {
+				menus[i] = nil
+			}
+		}
+	}
+
+	r := &model.Menu{
+		Name: "root",
+		Path: "/",
+	}
+
+	root := utils.GenNode(r, menus)
+	utils.ClearNode(root)
+	return dto.NewOKResult(dto.UserLoginResp{Token: jwt, UserName: req.Username, Menus: menus})
 }
 
-func (u UserService) ChangePassword(req dto.UserLoginReq) dto.Result {
+func (u *UserService) ChangePassword(req dto.UserLoginReq) dto.Result {
 	err := req.Verify()
 	if err != nil {
 		log.Error(err)
@@ -63,7 +82,7 @@ func (u UserService) ChangePassword(req dto.UserLoginReq) dto.Result {
 	if user == nil {
 		return dto.NewErrResult(cst.PW_ERROR, "用户名或者密码错误")
 	}
-	jwt, err := utils.GenJWT(user.Id)
+	jwt, err := utils.GenJWT(user.Id, req.Username)
 	if err != nil {
 		log.Error(err)
 		return dto.NewErrResult(cst.UNKNOW_ERROR, "因未知原因登陆失败")

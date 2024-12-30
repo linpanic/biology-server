@@ -7,6 +7,7 @@ import (
 	"github.com/linpanic/biology-server/cst"
 	"github.com/linpanic/biology-server/db"
 	"github.com/linpanic/biology-server/logs"
+	"github.com/linpanic/biology-server/permission"
 	"github.com/linpanic/biology-server/server/router"
 	"github.com/linpanic/biology-server/server/service"
 	log "github.com/sirupsen/logrus"
@@ -23,6 +24,9 @@ func init() {
 	service.InitNumber()
 
 	caches.InitStrainAlleleField()
+
+	permission.InitCasbin()
+
 }
 
 var cfg = flag.String("f", "./config.json", "config file path")

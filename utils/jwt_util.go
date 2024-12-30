@@ -8,11 +8,12 @@ import (
 )
 
 // 生成JWT
-func GenJWT(userId int64) (string, error) {
+func GenJWT(userId int64, username string) (string, error) {
 	claims := make(jwt.MapClaims)
 	claims["exp"] = time.Now().Add(time.Second * time.Duration(caches.JWTTime)).Unix()
 	claims["iat"] = time.Now().Unix()
 	claims["user"] = userId
+	claims["username"] = username
 	token := jwt.New(jwt.SigningMethodHS256)
 	token.Claims = claims
 	return token.SignedString(caches.JWTKey)

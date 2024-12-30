@@ -15,11 +15,14 @@ import (
 var (
 	RegisterApi = "http://127.0.0.1:10080/register"
 	LoginApi    = "http://127.0.0.1:10080/login"
+	ListApi     = "http://127.0.0.1:10080/biology/strain_list"
+	SearchApi   = "http://127.0.0.1:10080/biology/allele_search"
+	DelApi      = "http://127.0.0.1:10080/biology/strain_delete"
 )
 
 func TestRegister(t *testing.T) {
 	var req dto.UserRegisterReq
-	req.Username = "buhuang2"
+	req.Username = "test"
 	req.Password = "abc123"
 	req.Time = time.Now().Unix()
 
@@ -39,8 +42,8 @@ func TestRegister(t *testing.T) {
 
 func TestLogin(t *testing.T) {
 	var req dto.UserLoginReq
-	req.Username = "buhuang2"
-	req.Password = utils.MD5([]byte(utils.MD5([]byte("abc123"))))
+	req.Username = "test"
+	req.Password = strings.ToUpper(utils.MD5([]byte(utils.MD5([]byte("abc123")))))
 	req.Time = time.Now().Unix()
 	buf := bytes.Buffer{}
 	buf.WriteString(req.Username)
@@ -53,5 +56,38 @@ func TestLogin(t *testing.T) {
 	marshal, _ := json.Marshal(req)
 	log.Infof("请求api:%s,json为:%s", LoginApi, string(marshal))
 	resp := utils.HttpPostJson(LoginApi, req)
+	log.Info(string(resp.Data))
+}
+
+func TestGetList(t *testing.T) {
+	h := make(map[string]string)
+	h["X-Token"] = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjE2MjkyMjIsImlhdCI6MTcyMTAyNDQyMiwidXNlciI6Mn0.LK1ZjlD6STvbMGnk368NAa-h-bzxJgYIgTC1RJ2O538"
+	resp := utils.HttpPostJsonAndHeader(ListApi, h, dto.StrainListReq{
+		PageReq: dto.PageReq{
+			PageNo:   19,
+			PageSize: 5,
+		},
+		Key: "小米",
+		//Field:   "number",
+		//Order:   "desc",
+	})
+	log.Info(string(resp.Data))
+}
+
+func TestSearch(t *testing.T) {
+	h := make(map[string]string)
+	h["X-Token"] = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjE2MjkyMjIsImlhdCI6MTcyMTAyNDQyMiwidXNlciI6Mn0.LK1ZjlD6STvbMGnk368NAa-h-bzxJgYIgTC1RJ2O538"
+	resp := utils.HttpPostJsonAndHeader(SearchApi, h, dto.AlleleSearchReq{
+		Name: "拉",
+	})
+	log.Info(string(resp.Data))
+}
+
+func TestDel(t *testing.T) {
+	h := make(map[string]string)
+	h["X-Token"] = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjE2MjkyMjIsImlhdCI6MTcyMTAyNDQyMiwidXNlciI6Mn0.LK1ZjlD6STvbMGnk368NAa-h-bzxJgYIgTC1RJ2O538"
+	resp := utils.HttpPostJsonAndHeader(DelApi, h, dto.StrainDelReq{
+		StrainId: 1,
+	})
 	log.Info(string(resp.Data))
 }
