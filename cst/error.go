@@ -29,4 +29,5 @@ const (
 
 	USER_NOT_EXIST = "user_not_exist" //用户已存在
 
+	NO_ACCESS = "access error"
 )

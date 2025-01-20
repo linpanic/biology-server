@@ -5,11 +5,12 @@ import (
 	"github.com/linpanic/biology-server/cst"
 	"github.com/linpanic/biology-server/dao"
 	"github.com/linpanic/biology-server/dto"
+	"github.com/linpanic/biology-server/permission"
 	"github.com/linpanic/biology-server/utils"
 	"net/http"
 )
 
-func JWTAuth() func(*gin.Context) {
+func JWTAndCasbinAuth() func(*gin.Context) {
 	return func(c *gin.Context) {
 		token := c.Request.Header.Get("x-token")
 		if token == "" {
@@ -31,6 +32,13 @@ func JWTAuth() func(*gin.Context) {
 			c.Abort()
 			return
 		}
+		b, _ := permission.Ef.Enforce(user.UserName, c.Request.URL.Path, "read")
+		if b {
+			c.JSON(http.StatusOK, dto.NewErrResult(cst.NO_ACCESS, "未授权用户"))
+			c.Abort()
+			return
+		}
+
 		c.Set("user", userId)
 		c.Next()
 	}

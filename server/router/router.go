@@ -24,7 +24,7 @@ func WebApiRun(port int64) {
 	biology.POST("/strain_list", api.StrainApi.List)
 
 	authGroup := biology.Group("/")
-	authGroup.Use(middleware.JWTAuth())
+	authGroup.Use(middleware.JWTAndCasbinAuth())
 
 	//品系
 	authGroup.POST("/get_number", api.StrainApi.GetNumber)
