@@ -70,6 +70,7 @@ func SelectAlleleById(id int64) *model.Allele {
 	result := new(model.Allele)
 	err := db.DbLink.Model(&model.Allele{Id: id}).First(result).Error
 	if err != nil {
+		log.Error(err)
 		return nil
 	}
 	return result

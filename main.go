@@ -25,6 +25,7 @@ func init() {
 
 	caches.InitStrainAlleleField()
 
+	//初始化权限框架
 	permission.InitCasbin()
 
 }
@@ -42,6 +43,7 @@ func main() {
 	if c.JWTTime == 0 {
 		caches.JWTTime = cst.DEFAULT_JWT_TIME
 	}
+
 	if c.Port == 0 {
 		c.Port = 10080
 	}

@@ -38,7 +38,6 @@ func JWTAndCasbinAuth() func(*gin.Context) {
 			c.Abort()
 			return
 		}
-
 		c.Set("user", userId)
 		c.Next()
 	}
