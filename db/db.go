@@ -37,3 +37,27 @@ func DbInit() {
 		log.Fatal(err)
 	}
 }
+
+func NewDB() *gorm.DB {
+	exist := utils.CheckFileExist(DBDir)
+	if !exist {
+		utils.CreateDir(DBDir)
+	}
+	exist = utils.CheckFileExist(DBPath)
+	var err error
+	db, err := gorm.Open(sqlite.Open(DBPath), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true,
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	err = DbLink.AutoMigrate(&model.Allele{}, &model.AlleleAnnotate{},
+		&model.AlleleExtra{}, &model.ShortName{}, &model.Strain{},
+		&model.StrainAnnotate{}, &model.StrainExtra{}, &model.User{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return db
+}

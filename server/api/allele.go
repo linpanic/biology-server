@@ -10,12 +10,14 @@ import (
 )
 
 type AlleleAPI struct {
-	service.AlleleService
+	alleleSvc *service.AlleleService
 }
 
-var (
-	AlleleApi = new(AlleleAPI)
-)
+func NewAlleleAPI(svc *service.AlleleService) *AlleleAPI {
+	return &AlleleAPI{
+		alleleSvc: svc,
+	}
+}
 
 func (a *AlleleAPI) Add(c *gin.Context) {
 	req := new(dto.AlleleAddReq)
@@ -25,7 +27,7 @@ func (a *AlleleAPI) Add(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
-	result := a.AlleleService.Add(*req, c.GetInt64("user"))
+	result := a.alleleSvc.Add(*req, c.GetInt64("user"))
 	c.JSON(http.StatusOK, result)
 	return
 }
@@ -38,7 +40,7 @@ func (a *AlleleAPI) List(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
-	result := a.AlleleService.AlleleAllSearch(*req)
+	result := a.alleleSvc.AlleleAllSearch(*req)
 	c.JSON(http.StatusOK, result)
 	return
 }
@@ -51,7 +53,7 @@ func (a *AlleleAPI) Update(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
-	result := a.AlleleService.Update(*req, c.GetInt64("user"))
+	result := a.alleleSvc.Update(*req, c.GetInt64("user"))
 	c.JSON(http.StatusOK, result)
 	return
 }
@@ -64,7 +66,7 @@ func (a *AlleleAPI) Delete(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
-	result := a.AlleleService.Delete(*req, c.GetInt64("user"))
+	result := a.alleleSvc.Delete(*req, c.GetInt64("user"))
 	c.JSON(http.StatusOK, result)
 	return
 }

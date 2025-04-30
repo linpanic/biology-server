@@ -18,7 +18,8 @@ var (
 	l                     = new(sync.Mutex)
 )
 
-type StrainService struct{}
+type StrainService struct {
+}
 
 // 获取序列号
 func (s *StrainService) GetNumber(req dto.StrainNumberReq) dto.Result {

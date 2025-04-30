@@ -15,7 +15,15 @@ var (
 	AlleleServiceInstance AlleleService
 )
 
-type AlleleService struct{}
+type AlleleService struct {
+	db *gorm.DB
+}
+
+func NewAlleleService(db *gorm.DB) *AlleleService {
+	return &AlleleService{
+		db: db,
+	}
+}
 
 // 增加基因
 func (a *AlleleService) Add(req dto.AlleleAddReq, userId int64) dto.Result {
