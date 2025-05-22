@@ -7,6 +7,7 @@ import (
 	"github.com/linpanic/biology-server/db"
 	"github.com/linpanic/biology-server/dto"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 	"strconv"
 	"strings"
 	"sync"
@@ -14,11 +15,17 @@ import (
 )
 
 var (
-	StrainServiceInstance StrainService
-	l                     = new(sync.Mutex)
+	l = new(sync.Mutex)
 )
 
 type StrainService struct {
+	dbLink *gorm.DB
+}
+
+func NewStrainService(db *gorm.DB) *StrainService {
+	return &StrainService{
+		dbLink: db,
+	}
 }
 
 // 获取序列号

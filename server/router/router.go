@@ -16,6 +16,7 @@ func WebApiRun(port int64) {
 
 	dbLink := db.NewDB()
 	alleleSvc := service.NewAlleleService(dbLink)
+	strainSvc := service.NewStrainService(dbLink)
 
 	//登录，注册不需要验证
 	router.POST("/register", api.UserApi.Register)
@@ -25,20 +26,23 @@ func WebApiRun(port int64) {
 	router.POST("/valid", api.OauthApi.Valid)
 
 	//需要验证
+
+	strainApi := api.NewStrainApi(strainSvc, alleleSvc)
+
 	biology := router.Group("/biology")
-	biology.POST("/strain_list", api.StrainApi.List)
+	biology.POST("/strain_list", strainApi.List)
 
 	authGroup := biology.Group("/")
 	authGroup.Use(middleware.JWTAndCasbinAuth())
 
 	//品系
-	authGroup.POST("/get_number", api.StrainApi.GetNumber)
-	authGroup.POST("/strain_add", api.StrainApi.Add)
-	authGroup.POST("/strain_update", api.StrainApi.StrainUpdate)
-	authGroup.POST("/strain_delete", api.StrainApi.StrainDelete)
+	authGroup.POST("/get_number", strainApi.GetNumber)
+	authGroup.POST("/strain_add", strainApi.Add)
+	authGroup.POST("/strain_update", strainApi.StrainUpdate)
+	authGroup.POST("/strain_delete", strainApi.StrainDelete)
 
 	//基因
-	authGroup.POST("/allele_search", api.StrainApi.AlleleSearch) //搜素列表信息
+	authGroup.POST("/allele_search", strainApi.AlleleSearch) //搜素列表信息
 
 	alleleAPI := api.NewAlleleAPI(alleleSvc)
 	{

@@ -9,13 +9,20 @@ import (
 	"net/http"
 )
 
-var (
-	StrainApi StrainAPI
-)
+//var (
+//	StrainApi StrainAPI
+//)
+
+func NewStrainApi(strainSvc *service.StrainService, alleleSvc *service.AlleleService) *StrainAPI {
+	return &StrainAPI{
+		strainSvc:  strainSvc,
+		allleleSvc: alleleSvc,
+	}
+}
 
 type StrainAPI struct {
-	service.StrainService
-	service.AlleleService
+	strainSvc  *service.StrainService
+	allleleSvc *service.AlleleService
 }
 
 func (s *StrainAPI) GetNumber(c *gin.Context) {
@@ -26,7 +33,7 @@ func (s *StrainAPI) GetNumber(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
-	result := s.StrainService.GetNumber(*req)
+	result := s.strainSvc.GetNumber(*req)
 	c.JSON(http.StatusOK, result)
 	return
 }
@@ -39,7 +46,7 @@ func (s *StrainAPI) Add(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
-	result := s.StrainService.Add(*req, c.GetInt64("user"))
+	result := s.strainSvc.Add(*req, c.GetInt64("user"))
 	c.JSON(http.StatusOK, result)
 	return
 }
@@ -52,7 +59,7 @@ func (s *StrainAPI) List(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
-	result := s.StrainService.List(*req)
+	result := s.strainSvc.List(*req)
 	c.JSON(http.StatusOK, result)
 	return
 }
@@ -65,7 +72,7 @@ func (s *StrainAPI) StrainUpdate(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
-	result := s.StrainService.Update(*req, c.GetInt64("user"))
+	result := s.strainSvc.Update(*req, c.GetInt64("user"))
 	c.JSON(http.StatusOK, result)
 	return
 }
@@ -78,7 +85,7 @@ func (s *StrainAPI) AlleleUpdate(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
-	result := s.AlleleService.Update(*req, c.GetInt64("user"))
+	result := s.allleleSvc.Update(*req, c.GetInt64("user"))
 	c.JSON(http.StatusOK, result)
 	return
 }
@@ -91,7 +98,7 @@ func (s *StrainAPI) AlleleSearch(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
-	result := s.AlleleService.AlleleSearch(*req)
+	result := s.allleleSvc.AlleleSearch(*req)
 	c.JSON(http.StatusOK, result)
 	return
 }
@@ -104,7 +111,7 @@ func (s *StrainAPI) StrainDelete(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
-	result := s.StrainService.Delete(*req)
+	result := s.strainSvc.Delete(*req)
 	c.JSON(http.StatusOK, result)
 	return
 }
