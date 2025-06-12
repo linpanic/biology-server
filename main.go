@@ -5,7 +5,6 @@ import (
 	"github.com/linpanic/biology-server/caches"
 	"github.com/linpanic/biology-server/config"
 	"github.com/linpanic/biology-server/cst"
-	"github.com/linpanic/biology-server/db"
 	"github.com/linpanic/biology-server/logs"
 	"github.com/linpanic/biology-server/permission"
 	"github.com/linpanic/biology-server/server/router"
@@ -18,7 +17,7 @@ func init() {
 	logs.LogInit()
 
 	//初始化数据库链接
-	db.DbInit()
+	//db.DbInit()
 
 	//初始化品系序列号
 	service.InitNumber()

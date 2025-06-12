@@ -1,16 +1,15 @@
 package dao
 
 import (
-	"github.com/linpanic/biology-server/db"
 	"github.com/linpanic/biology-server/dto"
 	"github.com/linpanic/biology-server/model"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
-func SelectAlleleAnnotate(alleleNameId int64, annotate string) []model.AlleleAnnotate {
+func SelectAlleleAnnotate(dbLink *gorm.DB, alleleNameId int64, annotate string) []model.AlleleAnnotate {
 	var result []model.AlleleAnnotate
-	tx := db.DbLink.Model(&model.AlleleAnnotate{})
+	tx := dbLink.Model(&model.AlleleAnnotate{})
 	if alleleNameId != 0 {
 		tx = tx.Where(model.AlleleAnnotate{AlleleId: alleleNameId})
 	}

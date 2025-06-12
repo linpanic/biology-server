@@ -30,11 +30,12 @@ func (s *StrainAPI) GetNumber(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Error(err)
-		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
+		ReturnOK(c, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
+		//c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
 	result := s.strainSvc.GetNumber(*req)
-	c.JSON(http.StatusOK, result)
+	ReturnOK(c, result)
 	return
 }
 
@@ -43,11 +44,11 @@ func (s *StrainAPI) Add(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Error(err)
-		c.JSON(http.StatusOK, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
+		ReturnOK(c, dto.NewErrResult(cst.JSON_ERROR, err.Error()))
 		return
 	}
 	result := s.strainSvc.Add(*req, c.GetInt64("user"))
-	c.JSON(http.StatusOK, result)
+	ReturnOK(c, result)
 	return
 }
 

@@ -9,10 +9,10 @@ import (
 )
 
 // 精准搜索
-func SelectOneStrain(id, number int64) *model.Strain {
+func SelectOneStrain(dbLink *gorm.DB, id, number int64) *model.Strain {
 	result := new(model.Strain)
 	result.Id = id
-	tx := db.DbLink.Model(&model.Strain{})
+	tx := dbLink.Model(&model.Strain{})
 	if number != 0 {
 		tx = tx.Where("number = ?", number)
 	}
@@ -25,9 +25,9 @@ func SelectOneStrain(id, number int64) *model.Strain {
 }
 
 // 模糊搜索
-func SelectStrain(name string, pageNo, pageSize int) []model.Strain {
+func SelectStrain(dbLink *gorm.DB, name string, pageNo, pageSize int) []model.Strain {
 	var result []model.Strain
-	tx := db.DbLink.Model(&model.Strain{})
+	tx := dbLink.Model(&model.Strain{})
 
 	if name != "" {
 		tx = tx.Where("strain_name like ?", name)
@@ -43,9 +43,9 @@ func SelectStrain(name string, pageNo, pageSize int) []model.Strain {
 }
 
 // 精准搜索
-func SelectStrainByName(name string) *model.Strain {
+func SelectStrainByName(dbLink *gorm.DB, name string) *model.Strain {
 	result := new(model.Strain)
-	tx := db.DbLink.Model(&model.Strain{})
+	tx := dbLink.Model(&model.Strain{})
 
 	if name != "" {
 		tx = tx.Where("strain_name = ?", name)

@@ -77,7 +77,7 @@ func (a *AlleleService) AlleleSearch(req dto.AlleleSearchReq) dto.Result {
 	if err != nil {
 		return dto.NewErrResult(cst.VERIFY_ERROR, err.Error())
 	}
-	alleles := dao.SelectAlleleByName(req.Name)
+	alleles := dao.SelectAlleleByName(a.db, req.Name)
 	var resp dto.AlleleSearchResp
 
 	for _, v := range alleles {
@@ -98,7 +98,7 @@ func (a *AlleleService) AlleleAllSearch(req dto.AlleleListReq) dto.Result {
 	if err != nil {
 		return dto.NewErrResult(cst.VERIFY_ERROR, err.Error())
 	}
-	alleles, count := dao.SelectAlleleByAll(req.Key, req.Field, req.Order, req.PageNo, req.PageSize)
+	alleles, count := dao.SelectAlleleByAll(a.db, req.Key, req.Field, req.Order, req.PageNo, req.PageSize)
 	var resp dto.AlleleAllListResp
 	resp.PageNo = req.PageNo
 	resp.PageSize = req.PageSize
@@ -139,7 +139,7 @@ func (a *AlleleService) AlleleAllSearch(req dto.AlleleListReq) dto.Result {
 // 更新单独
 func (a *AlleleService) Update(req dto.AlleleUpdateReq, userId int64) dto.Result {
 	//校验数据是否存在
-	allele := dao.SelectAlleleById(req.Id)
+	allele := dao.SelectAlleleById(a.db, req.Id)
 	if allele == nil {
 		log.Error("找不到对应ID基因:", req.Id)
 		return dto.NewErrResult(cst.DAO_ERROR, "该ID不存在")
@@ -199,7 +199,7 @@ func (a *AlleleService) Update(req dto.AlleleUpdateReq, userId int64) dto.Result
 
 // 删除基因
 func (a *AlleleService) Delete(req dto.AlleleDelReq, userId int64) dto.Result {
-	err := dao.DeleteStrain(db.DbLink, []int64{req.Id})
+	err := dao.DeleteStrain(a.db, []int64{req.Id})
 	if err != nil {
 		if err != nil {
 			log.Error(err)

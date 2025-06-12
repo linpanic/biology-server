@@ -26,7 +26,6 @@ func WebApiRun(port int64) {
 	router.POST("/valid", api.OauthApi.Valid)
 
 	//需要验证
-
 	strainApi := api.NewStrainApi(strainSvc, alleleSvc)
 
 	biology := router.Group("/biology")

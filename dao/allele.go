@@ -3,14 +3,13 @@ package dao
 import (
 	"fmt"
 	"github.com/linpanic/biology-server/cst"
-	"github.com/linpanic/biology-server/db"
 	"github.com/linpanic/biology-server/dto"
 	"github.com/linpanic/biology-server/model"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
-func SelectAlleleByAll(kw, field, order string, pageNo, pageSize int) ([]model.AlleleAll, int64) {
+func SelectAlleleByAll(dbLink *gorm.DB, kw, field, order string, pageNo, pageSize int) ([]model.AlleleAll, int64) {
 	sql := cst.ALLELE_LIST_SQL
 	if kw != "" {
 		sql += cst.ALLELE_WHERE_SQL
@@ -35,19 +34,19 @@ func SelectAlleleByAll(kw, field, order string, pageNo, pageSize int) ([]model.A
 	sql += " LIMIT ? OFFSET ?"
 	if kw != "" {
 		kw = "%" + kw + "%"
-		err = db.DbLink.Debug().Raw(sql, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, pageSize, offset).Scan(&result).Error
+		err = dbLink.Debug().Raw(sql, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, pageSize, offset).Scan(&result).Error
 		if err != nil {
 			log.Error(err)
 			return nil, 0
 		}
-		err = db.DbLink.Raw(countSql, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw).Count(&count).Error
+		err = dbLink.Raw(countSql, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw, kw).Count(&count).Error
 	} else {
-		err = db.DbLink.Debug().Raw(sql, pageSize, offset).Scan(&result).Error
+		err = dbLink.Debug().Raw(sql, pageSize, offset).Scan(&result).Error
 		if err != nil {
 			log.Error(err)
 			return nil, 0
 		}
-		err = db.DbLink.Debug().Raw(countSql).Count(&count).Error
+		err = dbLink.Debug().Raw(countSql).Count(&count).Error
 	}
 	if err != nil {
 		log.Error(err)
@@ -56,9 +55,9 @@ func SelectAlleleByAll(kw, field, order string, pageNo, pageSize int) ([]model.A
 	return result, count
 }
 
-func SelectAllele(strainId int64) []model.Allele {
+func SelectAllele(dbLink *gorm.DB, strainId int64) []model.Allele {
 	var result []model.Allele
-	err := db.DbLink.Model(&model.Allele{}).Where(model.Allele{StrainId: strainId}).Find(&result).Error
+	err := dbLink.Model(&model.Allele{}).Where(model.Allele{StrainId: strainId}).Find(&result).Error
 	if err != nil {
 		log.Error(err)
 		return nil
@@ -66,9 +65,9 @@ func SelectAllele(strainId int64) []model.Allele {
 	return result
 }
 
-func SelectAlleleById(id int64) *model.Allele {
+func SelectAlleleById(dbLink *gorm.DB, id int64) *model.Allele {
 	result := new(model.Allele)
-	err := db.DbLink.Model(&model.Allele{Id: id}).First(result).Error
+	err := dbLink.Model(&model.Allele{Id: id}).First(result).Error
 	if err != nil {
 		log.Error(err)
 		return nil
@@ -76,9 +75,9 @@ func SelectAlleleById(id int64) *model.Allele {
 	return result
 }
 
-func SelectAlleleByName(name string) []model.Allele {
+func SelectAlleleByName(dbLink *gorm.DB, name string) []model.Allele {
 	var result []model.Allele
-	err := db.DbLink.Model(&model.Allele{}).Select("id,name,genome,serial").Where("name like ?", "%"+name+"%").Find(&result).Error
+	err := dbLink.Model(&model.Allele{}).Select("id,name,genome,serial").Where("name like ?", "%"+name+"%").Find(&result).Error
 	if err != nil {
 		log.Error(err)
 		return nil

@@ -60,7 +60,7 @@ func (s *StrainService) Add(req dto.StrainAddReq, userId int64) dto.Result {
 
 	if req.StrainName != "" {
 		//校验品系名是否重复
-		strain := dao.SelectStrainByName(req.StrainName)
+		strain := dao.SelectStrainByName(s.dbLink, req.StrainName)
 		if strain != nil {
 			return dto.NewErrResult(cst.STRAIN_EXIST, "品系名已存在")
 		}
@@ -328,7 +328,7 @@ func (s *StrainService) List(req dto.StrainListReq) dto.Result {
 
 // 修改品系数据
 func (s *StrainService) Update(req dto.StrainUpdateReq, userId int64) dto.Result {
-	strain := dao.SelectOneStrain(req.Id, 0)
+	strain := dao.SelectOneStrain(s.dbLink, req.Id, 0)
 	if strain == nil {
 		return dto.NewErrResult(cst.DAO_ERROR, "找不到该品系ID")
 	}
