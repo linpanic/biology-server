@@ -79,7 +79,6 @@ func (a *AlleleService) AlleleSearch(req dto.AlleleSearchReq) dto.Result {
 	}
 	alleles := dao.SelectAlleleByName(a.db, req.Name)
 	var resp dto.AlleleSearchResp
-
 	for _, v := range alleles {
 		resp.Allele = append(resp.Allele, dto.Allele{
 			Id:     v.Id,
@@ -88,7 +87,6 @@ func (a *AlleleService) AlleleSearch(req dto.AlleleSearchReq) dto.Result {
 			Serial: v.Serial,
 		})
 	}
-
 	return dto.NewOKResult(resp)
 }
 
